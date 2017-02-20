@@ -71,7 +71,8 @@ export function updateFarmEventEnd(
   };
 };
 
-export function saveFarmEvent(farm_event: Partial<FarmEvent>): Thunk {
+export function saveFarmEvent(farm_event: Partial<FarmEvent>,
+  callback: () => void): Thunk {
   let url = API.current.farmEventsPath;
   return function (dispatch, getState) {
     return Axios.post<FarmEvent>(url, farm_event)
@@ -79,6 +80,7 @@ export function saveFarmEvent(farm_event: Partial<FarmEvent>): Thunk {
         let payload = { ...farm_event, ...resp.data };
         dispatch({ type: "SAVE_FARM_EVENT_OK", payload });
         success(t("Successfully saved event."));
+        callback();
       })
       .catch(payload => {
         error(t("Tried to save Farm Event, but couldn't."));

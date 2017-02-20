@@ -188,114 +188,73 @@
 
 .thin-search-wrapper {
     position: relative;
+    border-bottom: 1px solid #000;
+    &:before,
+    &:after {
+        content: "";
+        position: absolute;
+        background: #000;
+        width: 1px;
+        height: 10px;
+        bottom: 0;
+    }
+    &:before {
+        left: 0;
+    }
+    &:after {
+        right: 0;
+    }
     .fa-search {
         position: absolute;
-        top: 1rem;
+        top: 0.8rem;
         left: 1rem;
     }
-    .thin-search {
-         ::-webkit-input-placeholder {
+    input {
+        background: transparent;
+        box-shadow: none !important;
+        padding-left: 3rem !important;
+        font-size: 1.4rem !important;
+        &:active,
+        &:focus {
+            background: transparent !important;
+        }
+        &::-webkit-input-placeholder {
             color: #000;
         }
-        border-bottom: 1px solid #000;
-        &:before,
-        &:after {
-            content: "";
-            position: absolute;
-            background: #000;
-            width: 1px;
-            height: 10px;
-            bottom: 0;
-        }
     }
-    input.search {
+    .select-results-container {
+        top: 4rem;
+    }
+    .select-result {
+        padding: 0;
+        margin-bottom: 1rem;
         background: transparent;
-        box-shadow: none;
-        padding-left: 3.5rem;
-        font-size: 1.4rem;
-        padding-bottom: 1rem;
+        border-bottom: none;
+        transition: all 0.4s ease;
+        &:last-child {
+            margin-bottom: 14rem;
+        }
+        &:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
     }
-    .Select {
-        border-bottom: 1px solid #000;
-        &:before,
-        &:after {
-            content: "";
-            position: absolute;
-            background: #000;
-            height: 10px;
-            width: 1px;
-            bottom: 0;
+    .plant-search-item {
+        height: 4rem;
+        img {
+            height: 4rem;
+            width: 4rem;
         }
-        &:before {
-            left: 0;
-        }
-        &:after {
-            right: 0;
-        }
-        .Select-multi-value-wrapper {
-            font-size: 1.4rem;
-            margin-left: 2.5rem;
-            margin-top: 0.2rem;
-            display: block;
-        }
-        .Select-arrow-zone {
-            display: none !important;
-        }
-        .Select-control {
-            background: transparent !important;
-            box-shadow: none !important;
-        }
-        .Select-placeholder {
-            color: #000 !important;
-            font-size: 1.4rem !important;
-            left: 2.5rem !important;
-        }
-        .Select-menu-outer {
-            // display: none !important;
-            top: 120%;
-            background: transparent !important;
-            border: none;
-            border-bottom: none;
-            box-shadow: none;
-            overflow: visible;
-            max-height: none;
-            min-height: 300px;
-            &:before,
-            &:after {
-                background: none;
-            }
-            .Select-menu {
-                max-height: none !important;
-                overflow-y: scroll !important;
-            }
-            .Select-option {
-                background: transparent;
-                color: #000 !important;
-                min-height: 1.6rem;
-                margin-bottom: 0.5rem;
-                .plant-age {
-                    margin-top: 0.4rem;
-                    display: block;
-                    color: #555;
-                    font-size: 1rem;
-                }
-                .plant-name {
-                    margin-left: 1rem;
-                    color: #000;
-                }
-                img {
-                    width: 2rem;
-                    height: 2rem;
-                }
-                &.is-focused {
-                    background: rgba(0, 0, 0, 0.1);
-                }
-                &:last-child {
-                    border-bottom-left-radius: 0px;
-                    border-bottom-right-radius: 0px;
-                }
-            }
-        }
+    }
+    .plant-search-item-age {
+        text-align: right;
+        font-size: 1rem;
+        padding-top: 1.4rem;
+        padding-right: 1rem;
+        float: right;
+    }
+    .plant-search-item-name {
+        margin-left: 1rem;
     }
 }
 

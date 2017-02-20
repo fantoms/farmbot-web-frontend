@@ -12,7 +12,9 @@ import {
   SelectSequenceOrRegimenProps,
   UpdateSequenceOrRegimenProps
 } from "../interfaces";
-
+import {
+  DropDownItem
+} from "../../ui/beta_select";
 import {
   selectSequenceOrRegimen,
   updateFarmEvent,
@@ -25,7 +27,6 @@ import {
 } from "../actions";
 import * as _ from "lodash";
 import * as moment from "moment";
-import { Option } from "react-select";
 
 interface EditFarmEventProps extends Everything {
   params: {
@@ -116,7 +117,7 @@ export class EditFarmEvent extends React.Component<EditFarmEventProps, {}> {
     this.props.dispatch(updateFarmEventRepeat(newValue, id));
   }
 
-  updateTimeUnit(event: Option) {
+  updateTimeUnit(event: DropDownItem) {
     let { value } = event;
     let id = parseInt(this.props.params.farm_event_id);
     this.props.dispatch(updateFarmEventTimeUnit(value, id));
