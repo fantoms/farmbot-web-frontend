@@ -1,50 +1,30 @@
 interface ParseClassNamesProps {
-    xs?: number[] | number;
-    sm?: number[] | number;
-    md?: number[] | number;
-    lg?: number[] | number;
+  xs?: number;
+  sm?: number;
+  md?: number;
+  lg?: number;
+  xsOffset?: number;
+  smOffset?: number;
+  mdOffset?: number;
+  lgOffset?: number;
 }
 
 export function parseClassNames(props: ParseClassNamesProps, base: string) {
-    // Base class
-    let classNames = base;
 
-    // First index of the array is the col size
-    // If it's not an array, it's just the number value
-    if (props.xs instanceof Array) {
-        classNames += ` col-xs-${props.xs[0]}`;
-    } else if (props.xs) {
-        classNames += ` col-xs-${props.xs}`;
-    }
-    if (props.sm instanceof Array) {
-        classNames += ` col-sm-${props.sm[0]}`;
-    } else if (props.sm) {
-        classNames += ` col-sm-${props.sm}`;
-    }
-    if (props.md instanceof Array) {
-        classNames += ` col-md-${props.md[0]}`;
-    } else if (props.md) {
-        classNames += ` col-md-${props.md}`;
-    }
-    if (props.lg instanceof Array) {
-        classNames += ` col-lg-${props.lg[0]}`;
-    } else if (props.lg) {
-        classNames += ` col-lg-${props.lg}`;
-    }
+  // Base class
+  let classNames = base;
 
-    // Second index is the col offset
-    if (props.xs instanceof Array) {
-        classNames += ` col-xs-offset-${props.xs[1]}`;
-    }
-    if (props.sm instanceof Array) {
-        classNames += ` col-sm-offset-${props.sm[1]}`;
-    }
-    if (props.md instanceof Array) {
-        classNames += ` col-md-offset-${props.md[1]}`;
-    }
-    if (props.lg instanceof Array) {
-        classNames += ` col-lg-offset-${props.lg[1]}`;
-    }
+  // Refactor? Add classes as needed.
+  // This is the place that would change most if we switched ui libs.
+  if (props.xs) { classNames += ` col-xs-${props.xs}`; }
+  if (props.sm) { classNames += ` col-sm-${props.sm}`; }
+  if (props.md) { classNames += ` col-md-${props.md}`; }
+  if (props.lg) { classNames += ` col-lg-${props.lg}`; }
+  if (props.xsOffset) { classNames += ` col-xs-offset-${props.xsOffset}`; }
+  if (props.smOffset) { classNames += ` col-sm-offset-${props.smOffset}`; }
+  if (props.mdOffset) { classNames += ` col-md-offset-${props.mdOffset}`; }
+  if (props.lgOffset) { classNames += ` col-lg-offset-${props.lgOffset}`; }
 
-    return classNames;
+  return classNames;
+
 }

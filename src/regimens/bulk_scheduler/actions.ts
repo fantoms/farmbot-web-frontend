@@ -5,6 +5,7 @@ import { Sequence } from "../../sequences/interfaces";
 import { groupRegimenItemsByWeek } from "./group_regimen_items_by_week";
 import { t } from "i18next";
 import { newRegimen } from "../actions";
+import { SetTimeOffsetProps, ToggleDayParams } from "./interfaces";
 
 export function pushWeek() {
   return {
@@ -18,16 +19,11 @@ export function popWeek() {
   };
 }
 
-interface SetTimeOffsetProps {
-  hours: number;
-  minutes: number;
-}
-
 const MINUTES_MS = 1000 * 60;
 const HOURS_MS = MINUTES_MS * 60;
 
 /** Sets daily offset of a regimen */
-export function setTimeOffset({hours, minutes}: SetTimeOffsetProps) {
+export function setTimeOffset({ hours, minutes }: SetTimeOffsetProps) {
   let milliseconds = [hours * HOURS_MS, minutes * MINUTES_MS]
     .reduce((num, acc) => num + acc);
 
@@ -47,12 +43,7 @@ export function setTimeOffset({hours, minutes}: SetTimeOffsetProps) {
   };
 }
 
-export interface ToggleDayParams {
-  week: number;
-  day: number;
-}
-
-export function toggleDay({week, day}: ToggleDayParams) {
+export function toggleDay({ week, day }: ToggleDayParams) {
   return {
     type: "TOGGLE_DAY",
     payload: {

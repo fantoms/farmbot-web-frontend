@@ -1,17 +1,15 @@
 import { OpenFarm } from "./openfarm";
-import { Regimen } from "../regimens/interfaces";
+import { DropDownItem } from "../ui/index";
+import { Dictionary } from "farmbot/dist";
 import { Sequence } from "../sequences/interfaces";
-import { Option } from "react-select";
+import { Regimen } from "../regimens/interfaces";
+import { Everything } from "../interfaces";
 
-export interface SelectSequenceOrRegimenProps extends Option {
-  /** Used to identify checking which id in what array to match. */
-  kind?: string;
-}
-
-/** Used to associate dates with events in that are the same day */
-export interface FinalEventData {
-  date: string;
-  finalEvents: FarmEventExecutableData[];
+export interface IndexProps extends Everything {
+  params: {
+    species: string;
+    plant_id: string;
+  };
 }
 
 export interface UpdateSequenceOrRegimenProps {
@@ -20,6 +18,8 @@ export interface UpdateSequenceOrRegimenProps {
   kind: string;
   farm_event_id: number;
 }
+
+export type FarmEventForm = Partial<Record<keyof FarmEvent, string | number>>;
 
 export type TimeUnit = "never"
   | "minutely"
@@ -38,15 +38,8 @@ export interface FarmEvent {
   next_time: string;
   executable_id: number;
   executable_type: string;
-  calendar?: string[] | undefined;
+  readonly calendar?: string[] | undefined;
 };
-
-export interface FarmEventExecutableData {
-  farm_event_data: FarmEvent;
-  executable_data: {
-    name: string;
-  };
-}
 
 export interface MovePlantProps {
   deltaX: number;
@@ -74,6 +67,8 @@ export interface Plant {
   name: string;
   x: number;
   y: number;
+  radius: number;
+  spread?: number | undefined;
   planting_area_id: string;
   icon_url: string; // ? Maybe this will change.
   openfarm_slug: string; // ? Maybe this will change.
@@ -85,10 +80,6 @@ export interface Specimen {
   imgUrl: string;
 }
 
-export interface RegimenWithKindProp extends Regimen {
-  kind: string;
-}
-
 export interface DesignerState {
   x_size: number;
   y_size: number;
@@ -98,8 +89,6 @@ export interface DesignerState {
   deprecatedPlants: Plant[];
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
-  currentSequenceOrRegimen: Partial<Sequence | RegimenWithKindProp | undefined>;
-  farmEventToBeAdded: Partial<FarmEvent>;
 }
 
 export interface Point {
@@ -111,3 +100,124 @@ export interface Point {
   created_at: string;
   meta: { [key: string]: (string | undefined) };
 }
+
+export type AddFarmEventState =
+  Partial<Record<keyof FarmEvent, string | number>>;
+
+export interface AddEditFarmEventProps {
+  selectOptions: DropDownItem[];
+  repeatOptions: DropDownItem[];
+  farmEvents: FarmEvent[];
+  sequenceById: Dictionary<Sequence>;
+  regimenById: Dictionary<Regimen>;
+  formatDate(input: string): string;
+  formatTime(input: string): string;
+  handleTime(e: React.SyntheticEvent<HTMLInputElement>, currentISO: string): string;
+  save(fe: FarmEventForm): void;
+  update(fe: FarmEventForm): void;
+  delete(farm_event_id: number): void;
+}
+
+/** One CalendarDay has many CalendarOccurrences. For instance, a FarmEvent
+ * that executes every 8 hours will create 3 CalendarOccurrences in a single
+ * CalendarDay */
+export interface CalendarOccurrence {
+  sortKey: number;
+  timeStr: string;
+  executableName: string;
+  executableId: number;
+  id: number;
+}
+
+/** A group of FarmEvents for a particular day on the calendar. */
+export interface CalendarDay {
+  /** Unix timestamp. Used as a unique key in JSX and for sorting. */
+  sortKey: string;
+  month: string;
+  day: number;
+  /** Every event that will execute on that day. */
+  items: CalendarOccurrence[];
+}
+
+export interface FarmEventProps {
+  /** Sorted list of the first (100?) events due on the calendar. */
+  calendarRows: CalendarDay[];
+  /** Call this function to navigate to different pages. */
+  push: (url: string) => void;
+}
+
+export interface GardenMapProps extends Everything {
+  params: {
+    species: string;
+    plant_id: string;
+  };
+}
+
+export interface GardenMapState {
+  activePlant: Plant | undefined;
+  tempX: number | undefined;
+  tempY: number | undefined;
+}
+
+export interface GardenPlantProps {
+  plant: Plant;
+  onUpdate: (deltaX: number, deltaY: number, idx: number) => void;
+  onDrop: (id: number) => void;
+}
+
+export interface GardenPointProps {
+  point: Point;
+}
+
+export type PlantOptions = Partial<Plant>;
+
+export interface SpeciesInfoProps extends Everything {
+  params: { species: string; };
+}
+
+export interface EditPlantInfoProps extends Everything {
+  params: { plant_id: string; };
+}
+
+export interface PlantInfoProps extends Everything {
+  params: { plant_id: string };
+}
+
+export interface DNDSpeciesMobileState {
+  isDragging: boolean;
+}
+
+export interface DraggableEvent {
+  currentTarget: HTMLImageElement;
+  dataTransfer: { setDragImage: Function; };
+}
+
+export interface SpeciesCatalogTileProps {
+  result: CropLiveSearchResult;
+  dispatch: Function;
+}
+
+export interface SearchBoxParams {
+  query: string;
+  dispatch: Function;
+}
+
+export interface DraggableSvgImageState {
+  isDragging: boolean;
+  mouseX: number;
+  mouseY: number;
+  radius: number;
+}
+
+export interface DraggableSvgImageProps {
+  id: number;
+  height: number;
+  width: number;
+  onUpdate: (deltaX: number, deltaY: number, idx: number) => void;
+  onDrop: (id: number) => void;
+  x: number;
+  y: number;
+  href: string;
+}
+
+

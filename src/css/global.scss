@@ -17,67 +17,9 @@ input[type=time] {
     border-radius: 0;
 }
 
-.page {
-    padding-top: 2rem;
-}
-
-.page>.row>*>.row {
-    margin-bottom: 20px;
-}
-
 @media (max-width: 830px) {
     .app {
         overflow: hidden !important;
-    }
-}
-
-.Select-control {
-    border-radius: 0 !important;
-    font-size: 1.2rem !important;
-    color: $dark_gray !important;
-    height: 30px !important;
-    width: 100% !important;
-    border: 0 !important;
-    box-shadow: 0px 0px 10px $light_gray !important;
-}
-
-.Select-option {
-    padding: 0.4rem 1rem !important;
-}
-
-.Select-menu {
-    padding: 0.8rem 0;
-}
-
-.Select-option,
-.Select-value {
-    .saucer {
-        vertical-align: middle;
-        margin-right: 1rem;
-        width: 1.6rem;
-        height: 1.6rem;
-    }
-}
-
-.Select-clear-zone {
-    display: none !important;
-}
-
-.Select-value-params {
-    float: right;
-}
-
-.Select.group-by {
-    .Select-menu-outer {
-        .Select-option:not(.is-disabled) {
-            padding: 0.4rem 1rem 0.4rem 2.2rem !important;
-        }
-        .Select-option.is-disabled {
-            text-transform: uppercase;
-            font-weight: bold;
-            font-size: 1.3rem;
-            color: black;
-        }
     }
 }
 
@@ -142,28 +84,21 @@ a {
     cursor: pointer !important;
 }
 
-.select-wrapper {
-    position: relative;
-    select {
-        font-size: 1.2rem;
-        color: #434343;
-        height: auto;
-        width: 100%;
-        border: 0;
-        padding: 6px 8px !important;
-        box-shadow: 0px 0px 10px #ddd;
-        border-radius: 0;
-        -webkit-appearance: none;
-    }
+.select-search-container {
     &:after {
-        content: "\2195";
+        content: "\25BE";
         position: absolute;
-        width: 1rem;
-        height: 1rem;
-        top: 0;
-        right: 0;
-        padding: 0.4rem 1.5rem 0 0px;
-        pointer-events: none
+        color: $dark_gray;
+        font-size: 2rem;
+        right: 1rem;
+        top: 0.2rem;
+        line-height: initial;
+    }
+}
+
+.thin-search-wrapper {
+    .select-search-container:after {
+        content: "";
     }
 }
 
@@ -251,14 +186,10 @@ fieldset {
     font-size: 1.5rem;
 }
 
-.webcam-widget label {
-    padding: 0.5rem 0 0 0.5rem;
-}
-
 .clear-webcam-url-btn {
     position: absolute;
     left: 2rem;
-    top: 3.2rem;
+    top: 6.2rem;
 }
 
 .webcam-url-input {
@@ -318,6 +249,13 @@ ul {
 
 .select {
     position: relative;
+    input {
+        height: 30px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-right: 3rem !important;
+    }
     .select-results-container {
         position: absolute;
         left: 0;

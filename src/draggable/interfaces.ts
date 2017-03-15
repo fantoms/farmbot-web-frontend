@@ -8,51 +8,48 @@ export type DataXfer = StepSpliceDataXfer | StepMoveDataXfer;
 export type DataXferIntent = "step_splice" | "step_move";
 
 export interface DataXferBase {
-    /** "who"" started the drag event*/
-    draggerId: number;
-    /** "what" you are dragging and dropping. This could technically be generic.
-     * TODO: Refactor this to be type <T> instead of Step if we drag/drop
-     * things other than `Step`s */
-    value: Step;
-    /** "where" to find it in the state object (when it is dropped). */
-    uuid: string;
-    /** "why" the drag/drop event took place (tagged union-  See Typescript
-     * documentation for more information). */
-    intent: DataXferIntent;
-
+  /** "who"" started the drag event*/
+  draggerId: number;
+  /** "what" you are dragging and dropping. */
+  value: Step;
+  /** "where" to find it in the state object (when it is dropped). */
+  uuid: string;
+  /** "why" the drag/drop event took place (tagged union-  See Typescript
+   * documentation for more information). */
+  intent: DataXferIntent;
 }
 
 /** Data transfer payload used when moving a *new* step into an existing step */
 export interface StepSpliceDataXfer extends DataXferBase {
-    intent: "step_splice";
+  intent: "step_splice";
 }
 
 /** Data transfer payload used when reordering an existing step. */
 export interface StepMoveDataXfer extends DataXferBase {
-    intent: "step_move";
+  intent: "step_move";
 }
 
 /** Interface for store.draggable . */
 export interface DragableState {
-    dataTransfer: { [key: string]: DataXfer | undefined };
+  dataTransfer: { [key: string]: DataXfer | undefined };
 };
 
 /* Props for <DropArea /> */
 export interface DropAreaProps {
-    callback?: (key: string) => any;
-    isLocked?: boolean;
+  callback?: (key: string) => any;
+  isLocked?: boolean;
 }
 
 /* State for <DropArea /> */
 export interface DropAreaState {
-    isHovered?: boolean;
+  isHovered?: boolean;
 }
 
 export interface StepDraggerProps {
-    dispatch: Function;
-    step: Step;
-    intent: DataXferIntent;
-    ghostCss: string;
-    children?: JSX.Element | undefined;
-    draggerId: number;
+  dispatch: Function;
+  step: Step;
+  intent: DataXferIntent;
+  ghostCss: string;
+  children?: JSX.Element | undefined;
+  draggerId: number;
 }

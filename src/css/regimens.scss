@@ -1,0 +1,43 @@
+.regimen-list-widget {
+    .plus-button {
+        display: none;
+    }
+}
+
+@media (max-width: 568px) {
+    .all-content-wrapper {
+        >.row {
+            display: flex;
+            flex-direction: column-reverse;
+        }
+        .regimen-list-widget {
+            display: none;
+        }
+    }
+    .regimen-list-widget {
+        .widget-wrapper {
+            box-shadow: none !important;
+        }
+        .widget-wrapper>.row {
+            display: none;
+        }
+        .widget-content {
+            background: transparent;
+        }
+        .block-header {
+            display: block;
+            border-radius: 0.2rem;
+            color: $dark_gray;
+            text-transform: uppercase;
+            font-weight: bold;
+            padding: 1rem;
+        }
+    }
+    .plus-button {
+        margin: 0 auto !important;
+        display: block !important;
+        i {
+            font-size: 1.8rem;
+        }
+    }
+}

@@ -2,7 +2,7 @@ import * as React from "react";
 
 interface BIProps {
   value: string;
-  onCommit: Function;
+  onCommit(e: React.SyntheticEvent<HTMLInputElement>): void;
   min?: number;
   max?: number;
   type?: "text" | "number" | "email" | "password" | "time" | "date";
@@ -13,6 +13,7 @@ interface BIProps {
   allowEmpty?: boolean;
   disabled?: boolean;
   className?: string;
+  placeholder?: string;
 }
 
 interface BIState {
@@ -55,6 +56,7 @@ export class BlurableInput extends React.Component<BIProps, BIState> {
       max={this.props.max}
       type={this.props.type || "text"}
       disabled={this.props.disabled}
-      className={this.props.className} />;
+      className={this.props.className}
+      placeholder={this.props.placeholder} />;
   }
 }

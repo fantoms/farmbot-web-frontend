@@ -9,8 +9,10 @@ import {
   TimeUnit
 } from "../farm_designer/interfaces";
 import * as moment from "moment";
+import { Plant as newPlant } from "../farm_designer/plant";
 
 const initialState: Sync = {
+  loaded: false,
   api_version: "",
   compat_num: 0,
   device: {
@@ -42,6 +44,17 @@ export let syncReducer = generateReducer<Sync>(initialState)
   })
   .add<Sync>("FETCH_SYNC_OK", function (s, a) {
     s = a.payload;
+    s.loaded = true;
+    return s;
+  })
+  .add<{}>("SYNC_TIMEOUT_EXCEEDED", function (s, a) {
+    s.loaded = true;
+    return s;
+  })
+  .add<Plant>("SAVE_PLANT_OK", function (s, a) {
+    // Exxxttrraaa runtime safety.
+    let plant = newPlant(a.payload);
+    s.plants.push(plant);
     return s;
   })
   .add<MovePlantProps>("MOVE_PLANT", function (s, a) {
@@ -85,7 +98,7 @@ export let syncReducer = generateReducer<Sync>(initialState)
     property: string, value: string, farm_event_id: number
   }>("UPDATE_FARM_EVENT_START",
   function (s, { payload }) {
-    let { value, farm_event_id } = payload;
+    let { farm_event_id } = payload;
     let currentEvent = _.findWhere(s.farm_events, { id: farm_event_id });
 
     switch (payload.property) {
@@ -95,7 +108,7 @@ export let syncReducer = generateReducer<Sync>(initialState)
 
       case "start_time":
         let merge = moment(currentEvent.start_time.toString());
-        /** It's a little ambiguous, but not sure how else to 
+        /** It's a little ambiguous, but not sure how else to
          * pull this one off.
          * payload.value.split => "13:40" => hours: 13, minutes: 40
          */
@@ -128,7 +141,7 @@ export let syncReducer = generateReducer<Sync>(initialState)
     property: string, value: string, farm_event_id: number
   }>("UPDATE_FARM_EVENT_END",
   function (s, { payload }) {
-    let { value, farm_event_id } = payload;
+    let { farm_event_id } = payload;
     let currentEvent = _.findWhere(s.farm_events, { id: farm_event_id });
 
     switch (payload.property) {
@@ -138,7 +151,7 @@ export let syncReducer = generateReducer<Sync>(initialState)
 
       case "end_time":
         let merge = moment(`${currentEvent.end_time}`);
-        /** It's a little ambiguous, but not sure how else to 
+        /** It's a little ambiguous, but not sure how else to
          * pull this one off.
          * payload.value.split => "13:40" => hours: 13, minutes: 40
          */

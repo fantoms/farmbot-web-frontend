@@ -8,6 +8,7 @@
         height: 88vh;
         overflow-x: hidden;
         font-size: 1.6rem;
+        padding-bottom: 3rem;
         label {
             font-size: 1.3rem;
             margin-top: 2rem;
@@ -100,12 +101,12 @@
     .right-button {
         float: right;
         text-transform: uppercase;
-        font-size: 1.2rem;
+        font-size: 1rem;
         border: 1px solid;
-        padding: 0.4rem 1rem;
+        padding: 0.4rem 1.2rem;
         font-weight: bold;
         letter-spacing: 1px;
-        border-radius: 6px;
+        border-radius: 4px;
         color: $off_white;
         &:hover {
             color: $white;
@@ -121,16 +122,6 @@
 
 .panel-content {
     padding: 1rem;
-    .events {
-        .Select-menu-outer {
-            width: 98% !important;
-            border-bottom-left-radius: 0 !important;
-            border-bottom-right-radius: 0 !important;
-        }
-        .Select-menu {
-            padding: 0 !important;
-        }
-    }
 }
 
 .add-farm-event-panel button,

@@ -1,46 +1,39 @@
 import * as React from "react";
-import { BotState } from "../interfaces";
+import { McuInputBoxProps } from "../interfaces";
 import { safeStringFetch } from "../../util";
 import { McuParams } from "farmbot";
 import { changeSettingsBuffer } from "../actions";
 
-interface Props {
-    bot: BotState;
-    setting: string;
-    dispatch: Function;
-}
+export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
+  primary() {
+    let { bot, setting } = this.props;
+    return safeStringFetch(bot.settingsBuffer, setting);
+  }
 
-export class McuInputBox extends React.Component<Props, {}> {
-    primary() {
-        let { bot, setting } = this.props;
-        return safeStringFetch(bot.settingsBuffer, setting);
-    }
+  secondary() {
+    let { setting, bot } = this.props;
+    return safeStringFetch(bot.hardware.mcu_params, setting);
+  }
 
-    secondary() {
-        let { setting, bot} = this.props;
-        return safeStringFetch(bot.hardware.mcu_params, setting);
-    }
+  style() {
+    return {
+      border: (this.primary()) ? "1px solid red" : ""
+    };
+  }
 
-    style() {
-        return {
-            border: (this.primary()) ? "1px solid red" : ""
-        };
-    }
-    change(key: string, dispatch: Function) {
-        return function (event: React.FormEvent<HTMLInputElement>) {
-            let formInput = event.currentTarget.value;
-            dispatch(changeSettingsBuffer(key as keyof McuParams, formInput));
-        };
-    }
+  change(key: string, dispatch: Function) {
+    return function (event: React.FormEvent<HTMLInputElement>) {
+      let formInput = event.currentTarget.value;
+      dispatch(changeSettingsBuffer(key as keyof McuParams, formInput));
+    };
+  }
 
-    render() {
-        return (
-            <td>
-                <input type="text"
-                    style={this.style()}
-                    onChange={this.change(this.props.setting, this.props.dispatch)
-                    }
-                    value={this.primary() || this.secondary() || "---"} />
-            </td>);
-    }
+  render() {
+    return <td>
+      <input type="text"
+        style={this.style()}
+        onChange={this.change(this.props.setting, this.props.dispatch)}
+        value={this.primary() || this.secondary() || "---"} />
+    </td>;
+  }
 }

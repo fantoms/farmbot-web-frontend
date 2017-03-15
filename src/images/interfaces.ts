@@ -41,8 +41,37 @@ export interface WeedDetectorENV {
   blur: number;
   morph: number;
   iterations: number;
-};
+}
 
 export interface DetectorState extends WeedDetectorENV {
   isEditing: boolean;
-};
+  deletionProgress: string;
+  settingsMenuOpen: boolean;
+}
+
+export interface FarmbotPickerProps {
+  h: [number, number];
+  s: [number, number];
+  v: [number, number];
+  hsv: { h: number, s: number, v: number };
+  hsl: { h: number, s: number, l: number };
+}
+
+export interface EnvSliderProps {
+  name: keyof HSV<{}>;
+  env: Partial<WeedDetectorENV>;
+  onChange?: (key: keyof HSV<{}>, val: [number, number]) => void;
+}
+
+export interface EnvSliderState extends Partial<HiLo> {
+  sliding: boolean;
+}
+
+export interface ImageFlipperProps {
+  images: Image[];
+}
+
+export interface ImageFlipperState {
+  currentInx: number;
+  isLoaded: boolean;
+}

@@ -1,25 +1,17 @@
-import { Plant, CropLiveSearchResult, TimeUnit } from "./interfaces";
+import { Plant, CropLiveSearchResult } from "./interfaces";
 import { Plant as newPlant } from "./plant";
 import { generateReducer } from "../redux/generate_reducer";
-import {
-  DesignerState,
-  RegimenWithKindProp
-} from "./interfaces";
+import { DesignerState } from "./interfaces";
 import { cloneDeep } from "lodash";
 import { HardwareState } from "../devices/interfaces";
 import { Sync } from "../interfaces";
-import { Regimen } from "../regimens/interfaces";
-import { Sequence } from "../sequences/interfaces";
-import * as moment from "moment";
 
 let DEFAULT_STATE: DesignerState = {
-  farmEventToBeAdded: {},
   deprecatedPlants: [],
   x_size: 0,
   y_size: 0,
   cropSearchQuery: "",
-  cropSearchResults: [],
-  currentSequenceOrRegimen: {}
+  cropSearchResults: []
 };
 
 export let designer = generateReducer<DesignerState>(DEFAULT_STATE)
@@ -62,73 +54,4 @@ export let designer = generateReducer<DesignerState>(DEFAULT_STATE)
     let state = cloneDeep(s);
     state.cropSearchResults = payload;
     return state;
-  })
-  .add<Sequence | RegimenWithKindProp>("SELECT_SEQUENCE_OR_REGIMEN",
-  function (s, { payload }) {
-    /** The regimen doesn't have a `kind` property */
-    s.currentSequenceOrRegimen = payload;
-    if (s.currentSequenceOrRegimen && !payload.kind) {
-      s.currentSequenceOrRegimen.kind = "Regimen";
-    }
-    return s;
-  })
-  .add<{ property: string, value: string }>("ADD_FARM_EVENT_START",
-  function (s, { payload }) {
-
-    switch (payload.property) {
-      case "start_date":
-        s.farmEventToBeAdded.start_time = moment(payload.value)
-          .toISOString();
-        break;
-
-      case "start_time":
-        let merge = moment(`${s.farmEventToBeAdded.start_time}`);
-        /** It's a little ambiguous, but not sure how else to 
-         * pull this one off.
-         * payload.value.split => "13:40" => hours: 13, minutes: 40
-         */
-        let time = payload.value.split(":");
-        let hours: number = parseInt(time[0]);
-        let minutes: number = parseInt(time[1]);
-        merge.set("hours", hours).set("minutes", minutes);
-        s.farmEventToBeAdded.start_time = merge.toISOString();
-      // TODO: Come back when API stuff is cleared up.
-    }
-
-    return s;
-  })
-  .add<{ property: string, value: string }>("ADD_FARM_EVENT_END",
-  function (s, { payload }) {
-    switch (payload.property) {
-      case "end_date":
-        s.farmEventToBeAdded.end_time = moment(payload.value)
-          .toISOString();
-        break;
-
-      case "end_time":
-        /** It's a little ambiguous, but not sure how else to 
-         * pull this one off.
-         * payload.value.split => "13:40" => hours: 13, minutes: 40
-         */
-        let merge = moment(`${s.farmEventToBeAdded.end_time}`);
-        let time = payload.value.split(":");
-        let hours: number = parseInt(time[0]);
-        let minutes: number = parseInt(time[1]);
-        merge.set("hours", hours).set("minutes", minutes);
-        s.farmEventToBeAdded.end_time = merge.toISOString();
-    }
-
-    return s;
-  })
-  .add<{ property: string, value: number }>("ADD_FARM_EVENT_REPEAT",
-  function (s, { payload }) {
-    let { value } = payload;
-    s.farmEventToBeAdded.repeat = value;
-    return s;
-  })
-  .add<{ value: TimeUnit }>("ADD_FARM_EVENT_TIME_UNIT",
-  function (s, { payload }) {
-    let { value } = payload;
-    s.farmEventToBeAdded.time_unit = value;
-    return s;
   });

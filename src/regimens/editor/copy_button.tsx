@@ -1,21 +1,15 @@
 import * as React from "react";
-import { Regimen } from "../interfaces";
 import { copyRegimen } from "../actions";
+import { CopyButtnProps } from "./interfaces";
+import { t } from "i18next";
 
-interface CopyButtnProps {
-    dispatch: Function;
-    regimen?: Regimen;
-}
-
-export function CopyButton({dispatch, regimen}: CopyButtnProps) {
-    if (regimen) {
-        return <div>
-            <button className="yellow button-like widget-control"
-                onClick={() => dispatch(copyRegimen(regimen))}>
-                Copy
-          </button>
-        </div>;
-    } else {
-        return <span />;
-    };
+export function CopyButton({ dispatch, regimen }: CopyButtnProps) {
+  if (regimen) {
+    return <button className="yellow button-like"
+      onClick={() => dispatch(copyRegimen(regimen))}>
+      {t("Copy")}
+    </button>;
+  } else {
+    return <span />;
+  };
 }

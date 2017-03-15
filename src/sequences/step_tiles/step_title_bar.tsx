@@ -17,7 +17,7 @@ function translate(input: Step): string {
     "send_message": t("Send Message"),
     "_if": t("If Statement"),
     "execute": t("Execute Sequence"),
-    "execute_script": t("Execute Script"),
+    "execute_script": t("Run Farmware"),
     "take_photo": t("Take a Photo")
   };
 

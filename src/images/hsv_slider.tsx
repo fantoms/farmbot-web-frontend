@@ -1,6 +1,6 @@
 import * as React from "react";
-import { HSV, HiLo } from "./interfaces";
-import { RangeSlider } from "@blueprintjs/core";
+import { HSV, HiLo, EnvSliderProps, EnvSliderState } from "./interfaces";
+import { RangeSlider } from "@blueprintjs/core/dist/components/slider/rangeSlider";
 
 /** Max HSV allowed by farmbot weed detector. */
 const RANGE: HSV<HiLo> = {
@@ -16,60 +16,73 @@ const DEFAULTS: HSV<HiLo> = {
   V: { lo: 50, hi: 255 }
 };
 
-interface EnvSliderProps {
-  name: keyof HSV<{}>;
-  onChange?: (key: keyof HSV<{}>, val: [number, number]) => void;
-}
-
-type EnvSliderState = Partial<HiLo>;
-
 export class HsvSlider extends React.Component<EnvSliderProps, EnvSliderState> {
   constructor() {
     super();
-    this.onChange = this.onChange.bind(this);
-    this.onRelease = this.onRelease.bind(this);
-    this.state = {};
+    this.state = {
+      sliding: false
+    };
   }
 
   componentDidMount() {
     this.onRelease();
   }
 
-  onChange(range: [number, number]) {
+  onChange = (range: [number, number]) => {
     this.setState({
       hi: range[1],
-      lo: range[0]
+      lo: range[0],
+      sliding: true
     });
   }
 
-  onRelease() {
+  get name() {
+    return this.props.name;
+  }
+
+  /** Triggered on componentDidMount() and when the user snaps the slider to a
+   * position. */
+  onRelease = () => {
     let cb = this.props.onChange;
-    if (cb) {
-      cb(this.props.name, [this.lo, this.hi]);
+    if (cb) { cb(this.name, [this.lo, this.hi]); }
+    this.setState({ sliding: false });
+  }
+
+  /** Retrieves the pair of hi/lo values from the remote end (bot).
+   * Returns [number, number] if bot is online running the farmware.
+   * Returns undefined otherwise.
+   */
+  get remoteValues() {
+    return (this.props.env)[this.name] || [];
+  }
+
+  /** The slider's high value */
+  get hi() {
+    let { hi } = this.state;
+    if (this.state.sliding) {
+      return hi || 1;
+    } else {
+      return this.remoteValues[1] || DEFAULTS[this.name].hi || 0;
     }
   }
 
-  get hi() {
-    let { hi } = this.state;
-    let { name } = this.props;
-    return (hi === undefined) ? DEFAULTS[name].hi : hi;
-  }
-
+  /** The slider's low value */
   get lo() {
     let { lo } = this.state;
-    let { name } = this.props;
-    return (lo === undefined) ? DEFAULTS[name].lo : lo;
+    if (this.state.sliding) {
+      return lo || 1;
+    } else {
+      return this.remoteValues[1] || DEFAULTS[this.name].lo || 0;
+    }
   }
 
   render() {
-    let { name } = this.props;
-
     return <RangeSlider
       onChange={this.onChange}
       onRelease={this.onRelease}
-      labelStepSize={RANGE[name].hi}
-      min={RANGE[name].lo}
-      max={RANGE[name].hi}
+      labelStepSize={RANGE[this.name].hi}
+      min={RANGE[this.name].lo}
+      max={RANGE[this.name].hi}
       value={[this.lo, this.hi]} />;
   }
 }

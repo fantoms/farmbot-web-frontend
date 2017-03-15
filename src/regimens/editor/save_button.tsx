@@ -1,13 +1,9 @@
 import * as React from "react";
-import { RegimenProps } from "../interfaces";
 import { saveRegimen } from "../actions";
 import { t } from "i18next";
+import { SaveButtonProps } from "./interfaces";
 
-interface SaveButtonProps extends RegimenProps {
-  url: string;
-};
-
-function save({regimen, dispatch, url}: SaveButtonProps) {
+function save({ regimen, dispatch, url }: SaveButtonProps) {
   if (regimen) {
     let x = regimen; // TS BUG???
     return (event: React.FormEvent<{}>) => {
@@ -16,14 +12,12 @@ function save({regimen, dispatch, url}: SaveButtonProps) {
   } else {
     throw new Error("Tried to save regimen, but there was no regimen.");
   };
-
 }
 
-export function SaveButton({regimen, dispatch, url}: SaveButtonProps) {
+export function SaveButton({ regimen, dispatch, url }: SaveButtonProps) {
   if (regimen) {
-    return <button className="green button-like widget-control"
+    return <button className="green button-like"
       onClick={save({ dispatch, regimen, url })}>
-
       {t("Save") + (regimen.dirty ? "*" : "")}
     </button>;
   } else {

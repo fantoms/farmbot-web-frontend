@@ -1,15 +1,14 @@
 import * as React from "react";
 import { newRegimen } from "../actions";
 import { t } from "i18next";
+import { AddRegimenProps } from "../interfaces";
 
-interface AddRegimenProps {
-  dispatch: Function;
-}
-
-export function AddRegimen({dispatch}: AddRegimenProps) {
-  return <button className="green button-like widget-control"
-                 onClick={ add(dispatch) }>
-    {t("Add")}
+export function AddRegimen(props: AddRegimenProps) {
+  props.className ? props.className : "";
+  let classes = "green button-like " + props.className;
+  return <button className={classes}
+    onClick={add(props.dispatch)}>
+    {props.children || t("Add")}
   </button>;
 }
 

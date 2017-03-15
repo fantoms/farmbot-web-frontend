@@ -36,7 +36,6 @@
     "@types/react-dom": "^0.14.18",
     "@types/react-redux": "^4.4.32",
     "@types/react-router": "^2.0.38",
-    "@types/react-select": "^1.0.37",
     "@types/redux": "^3.6.31",
     "@types/redux-thunk": "^2.1.31",
     "axios": "^0.14.0",
@@ -44,7 +43,7 @@
     "css-loader": "^0.25.0",
     "enzyme": "^2.6.0",
     "extract-text-webpack-plugin": "^2.0.0-beta.5",
-    "farmbot": "3.1.9",
+    "farmbot": "3.1.13",
     "fastclick": "^1.0.6",
     "file-loader": "^0.10.0",
     "handlebars": "^4.0.5",
@@ -64,9 +63,9 @@
     "react-addons-test-utils": "^15.4.1",
     "react-color": "^2.11.1",
     "react-dom": "^15.4.1",
+    "react-lite": "^0.15.33",
     "react-redux": "^4.4.1",
     "react-router": "^3.0.0",
-    "react-select": "^1.0.0-rc.2",
     "redux": "^3.3.1",
     "redux-immutable-state-invariant": "^1.2.3",
     "redux-thunk": "^2.0.1",
@@ -75,13 +74,15 @@
     "ts-jest": "^17.0.3",
     "ts-loader": "^1.0.0",
     "tslint": "^3.15.1",
-    "typescript": "^2.1.6",
+    "typescript": "^2.2.1",
     "url-loader": "^0.5.7",
     "webpack": "^2.2.0-rc.3",
     "webpack-uglify-js-plugin": "^1.1.9",
     "weinre": "^2.0.0-pre-I0Z7U9OV"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "webpack-notifier": "^1.5.0"
+  },
   "jest": {
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"

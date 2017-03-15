@@ -1,10 +1,29 @@
-.devices-widget {
+.device-widget {
     .updates {
-        position: relative;
-        .toggle-button {
-            position: absolute;
-            top: 0;
-            left: 8rem;
+        p {
+            float: left;
+            margin-right: 1.2rem;
         }
+        .toggle-button {
+            float: left;
+            margin-top: -0.2rem;
+        }
+    }
+}
+
+.farmware-widget {
+    fieldset {
+        margin-bottom: 1rem;
+    }
+    button {
+        float: left;
+        margin-right: 0.8rem;
+        margin-top: 0.6rem;
+    }
+}
+
+.weed-detector-widget {
+    h4:first-of-type {
+        margin-top: 1rem;
     }
 }

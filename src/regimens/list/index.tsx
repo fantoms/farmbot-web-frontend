@@ -2,41 +2,40 @@ import * as React from "react";
 import { RegimenListItem } from "./regimen_list_item";
 import { Everything } from "../../interfaces";
 import { AddRegimen } from "./add_button";
-import { t } from "i18next";
+import { connect } from "react-redux";
+import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui/index";
 
-export function RegimensList(props: Everything) {
-  return <div>
-    <div className="widget-wrapper regimens-widget">
-      <div className="row">
-        <div className="col-sm-12">
-          <AddRegimen dispatch={props.dispatch} />
-          <div className="widget-header">
-            <h5>Regimens</h5>
-            <i className="fa fa-question-circle widget-help-icon">
-              <div className="widget-help-text">{t(`This is a list of all of
-                your regimens. Click one to begin editing it.`)}
-              </div>
-            </i>
-          </div>
-        </div>
-      </div>
-      <div className="widget-content no-bottom-padding">
-        <div className="row">
-          <div className="col-sm-12">
-            <div>
-              {props
-                .regimens
-                .all
-                .map((regimen, inx) => <RegimenListItem
-                  dispatch={props.dispatch}
-                  regimen={regimen}
-                  index={inx}
-                  key={inx} />)
-              }
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>;
+@connect((state: Everything) => state)
+export class RegimensList extends React.Component<Everything, {}> {
+  render() {
+    return <Widget className="regimen-list-widget">
+      <WidgetHeader title="Regimens"
+        helpText={`This is a list of all of your regimens. 
+                   Click one to begin editing it.`}>
+        <AddRegimen dispatch={this.props.dispatch} />
+      </WidgetHeader>
+      <WidgetBody>
+        <Row>
+          <Col xs={12}>
+            {this
+              .props
+              .regimens
+              .all
+              .map((regimen, inx) => <RegimenListItem
+                dispatch={this.props.dispatch}
+                regimen={regimen}
+                index={inx}
+                key={inx} />)
+            }
+          </Col>
+        </Row>
+      </WidgetBody>
+
+      <AddRegimen className="plus-button"
+        dispatch={this.props.dispatch}>
+        <i className="fa fa-plus"></i>
+      </AddRegimen>
+
+    </Widget>;
+  }
 }

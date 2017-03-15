@@ -1,9 +1,19 @@
-.widget-wrapper.sequences-widget .fa-plus {
+.widget-wrapper.sequence-list-widget .fa-plus {
     display: none;
 }
 
-@media (max-width: 568px) {
-    .widget-wrapper.sequences-widget {
+@media (max-width) {
+    .all-content-wrapper {
+        display: flex;
+        flex-direction: column-reverse;
+        .drag-drop-area {
+            display: none;
+        }
+        .widget-wrapper.sequence-list-widget {
+            display: none;
+        }
+    }
+    .widget-wrapper.sequence-list-widget {
         box-shadow: none;
         .fa-plus {
             display: block;
@@ -38,5 +48,13 @@
         .widget-control {
             display: none;
         }
+    }
+}
+
+@media (min-width) {
+    .step-button-cluster-widget {
+        position: fixed;
+        width: 22%;
+        max-width: 35rem;
     }
 }

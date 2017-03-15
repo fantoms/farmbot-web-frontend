@@ -9,8 +9,9 @@ export namespace OpenFarm {
     description: string;
     sun_requirements: string;
     sowing_method: string;
+    svg_icon?: string | undefined;
     // Unsure of this. Def not an object tho.
-    spread?: number | string | undefined;
+    spread?: number | undefined;
     row_spacing?: number;
     height?: number;
     processing_pictures: number;

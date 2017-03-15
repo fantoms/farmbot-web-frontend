@@ -1,45 +1,38 @@
 import * as React from "react";
-import { BotState } from "../interfaces";
 import { safeStringFetch } from "../../util";
 import { changeConfigBuffer } from "../actions";
+import { ConfigInputBoxProps } from "../interfaces";
 
-interface Props {
-    bot: BotState;
-    setting: string;
-    dispatch: Function;
-}
+export class ConfigInputBox extends React.Component<ConfigInputBoxProps, {}> {
+  primary() {
+    let { bot, setting } = this.props;
+    return safeStringFetch(bot.configBuffer, setting);
+  }
 
-export class ConfigInputBox extends React.Component<Props, {}> {
-    primary() {
-        let { bot, setting} = this.props;
-        return safeStringFetch(bot.configBuffer, setting);
-    }
-    secondary() {
-        let { bot, setting} = this.props;
-        return safeStringFetch(bot.hardware.configuration, setting);
-    }
+  secondary() {
+    let { bot, setting } = this.props;
+    return safeStringFetch(bot.hardware.configuration, setting);
+  }
 
-    style() {
-        return {
-            border: (this.primary()) ? "1px solid red" : ""
-        };
-    }
+  style() {
+    return {
+      border: (this.primary()) ? "1px solid red" : ""
+    };
+  }
 
-    change(key: string, dispatch: Function) {
-        return function (event: React.FormEvent<HTMLInputElement>) {
-            let formInput = event.currentTarget.value;
-            dispatch(changeConfigBuffer({ [key]: Number(formInput) }));
-        };
-    }
+  change(key: string, dispatch: Function) {
+    return function (event: React.FormEvent<HTMLInputElement>) {
+      let formInput = event.currentTarget.value;
+      dispatch(changeConfigBuffer({ [key]: Number(formInput) }));
+    };
+  }
 
-    render() {
-        return (
-            <td>
-                <input type="text"
-                    style={this.style()}
-                    onChange={this.change(this.props.setting,
-                        this.props.dispatch)}
-                    value={this.primary() || this.secondary() || "---"} />
-            </td>);
-    }
+  render() {
+    return <td>
+      <input type="text"
+        style={this.style()}
+        onChange={this.change(this.props.setting, this.props.dispatch)}
+        value={this.primary() || this.secondary() || "---"} />
+    </td>;
+  }
 }

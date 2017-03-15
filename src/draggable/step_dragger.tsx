@@ -20,27 +20,27 @@ export const NULL_DRAGGER_ID = 0xCAFEF00D;
  * </button>
  * */
 export let stepDragEventHandler = (dispatch: Function,
-    step: Step,
-    ghostCss = "",
-    intent: DataXferIntent,
-    draggerId: number) =>
-    (ev: React.DragEvent<HTMLElement>) => {
-        addGhostImage(ev, ghostCss);
-        dispatch(stepPut(step, ev, intent, draggerId));
-    };
+  step: Step,
+  ghostCss = "",
+  intent: DataXferIntent,
+  draggerId: number) =>
+  (ev: React.DragEvent<HTMLElement>) => {
+    addGhostImage(ev, ghostCss);
+    dispatch(stepPut(step, ev, intent, draggerId));
+  };
 
-export function StepDragger({dispatch,
-    step,
-    children,
-    ghostCss,
-    intent,
-    draggerId}: StepDraggerProps) {
-    return <div draggable={true}
-        onDragStart={stepDragEventHandler(dispatch,
-            step,
-            ghostCss,
-            intent,
-            draggerId)} >
-        {children}
-    </div>;
+export function StepDragger({ dispatch,
+  step,
+  children,
+  ghostCss,
+  intent,
+  draggerId }: StepDraggerProps) {
+  return <div draggable={true}
+    onDragStart={stepDragEventHandler(dispatch,
+      step,
+      ghostCss,
+      intent,
+      draggerId)}>
+    {children}
+  </div>;
 }

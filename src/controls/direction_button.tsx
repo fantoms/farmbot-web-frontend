@@ -4,7 +4,7 @@ import { DirectionButtonProps } from "./interfaces";
 import { Farmbot } from "farmbot";
 
 export class DirectionButton extends React.Component<DirectionButtonProps, {}> {
-  sendCommand() {
+  sendCommand = () => {
     let isNegative = (this.props.direction === "up") ||
       (this.props.direction === "right");
     let multiplier = (isNegative) ? -1 : 1;
@@ -17,7 +17,7 @@ export class DirectionButton extends React.Component<DirectionButtonProps, {}> {
   render() {
     let classes = `button-like fa fa-2x arrow-button radius 
     fa-arrow-${this.props.direction}`;
-    return <button onClick={this.sendCommand.bind(this)} className={classes}>
+    return <button onClick={this.sendCommand} className={classes}>
     </button>;
   }
 }

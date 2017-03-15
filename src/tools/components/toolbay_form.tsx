@@ -1,283 +1,208 @@
 import * as React from "react";
-import { ListAndFormProps, ToolBayFormState } from "../interfaces";
-import { Widget, WidgetBody, WidgetHeader, DeprecatedSelect } from "../../ui";
-import { Col, BlurableInput } from "../../ui";
+import { ToolSlot, Props } from "../interfaces";
 import {
-  saveToolSlots,
+  Widget,
+  WidgetBody,
+  WidgetHeader,
+  FBSelect,
+  Col,
+  Row,
+  BlurableInput,
+  DropDownItem
+} from "../../ui";
+import {
+  toggleEditingToolBays,
+  addSlot,
   destroySlot,
-  addToolSlot,
-  updateToolSlot,
-  updateToolBay,
-  stopEditingToolBays,
+  updateSlot,
+  detachTool,
   saveToolBay
 } from "../actions";
 import { t } from "i18next";
-import { Tool } from "../interfaces";
-export class ToolBayForm extends React.Component<ListAndFormProps,
-  ToolBayFormState> {
+
+export class ToolBayForm extends React.Component<Props, Partial<ToolSlot>> {
   constructor() {
     super();
-    this.set = this.set.bind(this);
-    this.updateCoordinate = this.updateCoordinate.bind(this);
-    this.updateToolBayName = this.updateToolBayName.bind(this);
-    this.updateToolSlotTool = this.updateToolSlotTool.bind(this);
-    this.addToolSlot = this.addToolSlot.bind(this);
-    this.updateToolSelect = this.updateToolSelect.bind(this);
-    this.resetState = this.resetState.bind(this);
-    this.saveAll = this.saveAll.bind(this);
-    this.state = { x: 0, y: 0, z: 0, tool_id: null };
+    this.state = { x: 0, y: 0, z: 0 };
   }
 
-  resetState() {
-    this.setState({ x: 0, y: 0, z: 0, tool_id: null });
+  resetDropDownValue = (slot_id: number, fieldName: string, value: number) => {
+    this.props.dispatch(updateSlot(slot_id, fieldName, value));
   }
 
-  set(e: React.SyntheticEvent<HTMLInputElement>) {
-    let { name, value } = e.currentTarget;
-    this.setState({ [name]: parseInt(value) });
+  updateSlot = (slot_id: number, fieldName: string, value: number) => {
+    this.props.dispatch(updateSlot(slot_id, fieldName, value));
   }
 
-  updateCoordinate(e: React.SyntheticEvent<HTMLInputElement>) {
-    let { id, name, value } = e.currentTarget;
-    let { dispatch } = this.props;
-    dispatch(updateToolSlot(parseInt(id), name, parseInt(value)));
+  detachTool = (slot_id: number) => {
+    this.props.dispatch(detachTool(slot_id));
   }
 
-  updateToolSlotTool(e: React.SyntheticEvent<HTMLSelectElement>) {
-    let { id, value } = e.currentTarget;
-    let name = "tool_id";
-    let { dispatch } = this.props;
-    dispatch(updateToolSlot(parseInt(id), name, parseInt(value)));
+  updateSlotAxis = (ts_id: number) =>
+    (e: React.SyntheticEvent<HTMLInputElement>) => {
+      this.updateSlot(ts_id, e.currentTarget.name, parseInt(e.currentTarget.value, 10));
+    }
+
+  updateSlotTool = (ts_id: number) => (ddi: DropDownItem) => {
+    let { value } = ddi;
+    let x = parseInt(JSON.stringify(value));
+    if (_.isNaN(x)) {
+      this.detachTool(ts_id);
+    } else {
+      this.updateSlot(ts_id, "tool_id", x);
+    }
   }
 
-  updateToolBayName(e: React.SyntheticEvent<HTMLInputElement>) {
-    let { id, value } = e.currentTarget;
-    this.props.dispatch(updateToolBay(parseInt(id), value));
+  writeAxis = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    this.setState({ [e.currentTarget.name]: parseInt(e.currentTarget.value) });
   }
 
-  updateToolSelect(e: React.SyntheticEvent<HTMLSelectElement>) {
-    this.setState({ tool_id: parseInt(e.currentTarget.value) });
+  writeToolId = (e: DropDownItem) => {
+    let tool_id = parseInt(JSON.stringify(e.value));
+    this.setState({ tool_id });
   }
 
-  addToolSlot(tool_bay_id: number) {
-    this.props.dispatch(addToolSlot(this.state, tool_bay_id));
-    this.resetState();
-  }
-
-  saveAll(tool_bay_id: number) {
-    let { dispatch } = this.props;
-    let { tool_slots, tool_bays } = this.props.all;
-    dispatch(saveToolSlots(tool_slots));
-    dispatch(saveToolBay(tool_bay_id, tool_bays));
-  }
-
-  renderTools(tool_id: number | undefined | null, slot_id: number | undefined) {
-    let defaultValue = 0;
-    let options = this.props.all.tools.all.map((tool, index) => {
-      index++;
-      if (tool.id && (tool.id === tool_id)) {
-        var { id, name } = tool;
-        defaultValue = tool.id;
-      } else {
-        var name = "NOT FOUND";
-      };
-      return <option value={id}
-        id={(slot_id || "").toString()}
-        key={index}>{name}</option>;
-    });
-    return <DeprecatedSelect id={(slot_id || "").toString()}
-      onChange={this.updateToolSlotTool}
-      value={defaultValue.toString()}>
-      {options}
-      <option value="0">---</option>
-    </DeprecatedSelect>;
-  }
-
-  renderSlots(tool_bay_id: number | undefined) {
-    return _.sortBy(this.props.all.tool_slots, "id").map((slot, index) => {
-      index++;
-      let { x, y, z, tool_id } = slot;
-      let slot_id = slot.id;
-      return <tr key={index}>
-        <td>
-          {index}
-        </td>
-        <td>
-          <BlurableInput
-            type="number"
-            id={(slot_id || "").toString()}
-            name="x"
-            value={(x || "0").toString()}
-            onCommit={this.updateCoordinate}
-          />
-        </td>
-        <td>
-          <BlurableInput
-            type="number"
-            id={(slot_id || "").toString()}
-            name="y"
-            value={(y || "0").toString()}
-            onCommit={this.updateCoordinate}
-          />
-        </td>
-        <td>
-          <BlurableInput
-            type="number"
-            id={(slot_id || "").toString()}
-            name="z"
-            value={(z || "0").toString()}
-            onCommit={this.updateCoordinate}
-          />
-        </td>
-        <td>
-          {this.renderTools(tool_id, slot_id)}
-        </td>
-        <td>
-          <button
-            className="button-like red"
-            onClick={() => {
-              /** TODO: This isn't right, but if I make the id
-               *  required, TS throws errors everywhere. I'll
-               *  have to come back to this. -CV
-              */
-              this.props.dispatch(destroySlot(slot_id || 0));
-            }}>
-            <i className="fa fa-times"></i>
-          </button>
-        </td>
-      </tr>;
-    });
+  addNewSlot = (toolBayId: number) => {
+    this.props.dispatch(addSlot(this.state, toolBayId));
+    this.setState({ x: 0, y: 0, z: 0, tool_id: undefined });
   }
 
   render() {
-    let {
-      set,
-      updateCoordinate,
-      updateToolBayName,
-      addToolSlot,
-      updateToolSelect,
-      saveAll
-    } = this;
-    let { dispatch } = this.props;
-    let { tool_bays, tools } = this.props.all;
-    let stopEdit = () => { dispatch(stopEditingToolBays()); };
-    return <Col>
-      {tool_bays.map((bay, index) => {
-        index++;
-        let { name } = bay;
-        let { x, y, z } = this.state;
-        let tool_bay_id = bay.id;
-        return <Widget key={index}>
+    let { dispatch, toolBays } = this.props;
+    let toggle = () => dispatch(toggleEditingToolBays());
+    return <div>
+      {toolBays.map(bay => {
+        return <Widget key={bay.id}>
           <WidgetHeader
-            helpText={t(`Toolbays are where you store your FarmBot
-                          Tools. Each Toolbay has Slots that you can put your
-                          Tools in, which should be reflective of your real
-                          FarmBot hardware configuration.`)}
-            title={name}>
+            helpText={t(`Toolbays are where you store your FarmBot Tools. Each
+              Toolbay has Slots that you can put your Tools in, which should be
+              reflective of your real FarmBot hardware configuration.`)}
+            title={"ToolBay 1"}>
             <button
-              className="green button-like"
-              onClick={() => { saveAll(tool_bay_id); }}>
-              {t("SAVE")}
-              {bay.dirty && ("*")}
+              className="gray button-like" onClick={toggle}>
+              {t("Back")}
             </button>
             <button
-              className="gray button-like"
-              onClick={stopEdit}>
-              {t("BACK")}
+              className="green button-like"
+              onClick={() => dispatch(saveToolBay(bay.id, toolBays, toggle))}>
+              {t("Save")}
             </button>
           </WidgetHeader>
           <WidgetBody>
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <label>{t("TOOLBAY NAME")}</label>
-                  </td>
-                  <td>
+            <Row>
+              <Col xs={2}>
+                <label>{t("Slot")}</label>
+              </Col>
+              <Col xs={2}>
+                <label>{t("X")}</label>
+              </Col>
+              <Col xs={2}>
+                <label>{t("Y")}</label>
+              </Col>
+              <Col xs={2}>
+                <label>{t("Z")}</label>
+              </Col>
+              <Col xs={3}>
+                <label>{t("Tool")}</label>
+              </Col>
+            </Row>
+            {this.props.getToolSlots(bay.id).map(
+              (slot: ToolSlot, index: number) => {
+                /** Existing tool slots form */
+                return <Row key={slot.id}>
+                  <Col xs={2}>
+                    <label>{index + 1}</label>
+                  </Col>
+                  <Col xs={2}>
                     <BlurableInput
-                      value={name}
-                      onCommit={updateToolBayName}
-                      id={(tool_bay_id || "").toString()}
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <table>
-              <thead>
-                <tr>
-                  <th>{t("SLOT")}</th>
-                  <th>{t("X")}</th>
-                  <th>{t("Y")}</th>
-                  <th>{t("Z")}</th>
-                  <th>{t("TOOL")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {this.renderSlots(tool_bay_id)}
-                <tr>
-                  <td></td>
-                  <td>
-                    <BlurableInput
-                      value={(x || "0").toString()}
+                      value={(slot.x || 0).toString()}
+                      onCommit={this.updateSlotAxis(slot.id)}
                       type="number"
                       name="x"
-                      onCommit={set}
                     />
-                  </td>
-                  <td>
+                  </Col>
+                  <Col xs={2}>
                     <BlurableInput
-                      value={(y || "0").toString()}
+                      value={(slot.y || 0).toString()}
+                      onCommit={this.updateSlotAxis(slot.id)}
                       type="number"
                       name="y"
-                      onCommit={set}
                     />
-                  </td>
-                  <td>
+                  </Col>
+                  <Col xs={2}>
                     <BlurableInput
-                      value={(z || "0").toString()}
+                      value={(slot.z || 0).toString()}
+                      onCommit={this.updateSlotAxis(slot.id)}
                       type="number"
                       name="z"
-                      onCommit={set}
                     />
-                  </td>
-                  <td>
-                    <DeprecatedSelect onChange={updateToolSelect}
-                      value={(this.state.tool_id || "0")
-                        .toString()}>
-                      {tools.all.map((tool: Tool | null, iTool) => {
-                        iTool++;
-                        if (tool) {
-                          return <option
-                            key={iTool}
-                            value={tool.id}>
-                            {tool.name}
-                          </option>;
-                        } else {
-                          throw new Error("PROBLEM LOADING TOOL" + JSON.stringify(this.state))
-                        }
-                      })}
-                      <option
-                        key={tools.all.length + 1}
-                        value="0">---</option>
-                    </DeprecatedSelect>
-                  </td>
-                  <td>
+                  </Col>
+                  <Col xs={3}>
+                    <FBSelect
+                      list={this.props.getToolOptions()}
+                      initialValue={this.props.getChosenToolOption(slot.id)}
+                      onChange={this.updateSlotTool(slot.id)}
+                      allowEmpty={true}
+                    />
+                  </Col>
+                  <Col xs={1}>
                     <button
-                      className={`button-like
-                                                    green`}
-                      onClick={() => addToolSlot(
-                        tool_bay_id
-                      )}>
-                      <i className="fa fa-plus"></i>
+                      className="red button-like"
+                      onClick={() => dispatch(destroySlot(slot.id))}>
+                      <i className="fa fa-times" />
                     </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </Col>
+                </Row>;
+              })}
+            {/** New tool slot form */}
+            <Row>
+              <Col xs={2}>
+                <label>
+                  {(this.props.getToolSlots(bay.id).length + 1) || ""}
+                </label>
+              </Col>
+              <Col xs={2}>
+                <BlurableInput
+                  value={(this.state.x || 0).toString()}
+                  onCommit={this.writeAxis}
+                  type="number"
+                  name="x"
+                />
+              </Col>
+              <Col xs={2}>
+                <BlurableInput
+                  value={(this.state.y || 0).toString()}
+                  onCommit={this.writeAxis}
+                  type="number"
+                  name="y"
+                />
+              </Col>
+              <Col xs={2}>
+                <BlurableInput
+                  value={(this.state.z || 0).toString()}
+                  onCommit={this.writeAxis}
+                  type="number"
+                  name="z"
+                />
+              </Col>
+              <Col xs={3}>
+                <FBSelect
+                  list={this.props.getToolOptions()}
+                  onChange={this.writeToolId}
+                  allowEmpty={true}
+                />
+              </Col>
+              <Col xs={1}>
+                <button
+                  className="green button-like"
+                  onClick={() => this.addNewSlot(bay.id)}>
+                  <i className="fa fa-plus" />
+                </button>
+              </Col>
+            </Row>
           </WidgetBody>
         </Widget>;
       })}
-    </Col >;
+    </div>;
   }
 };

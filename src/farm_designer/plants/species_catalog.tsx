@@ -1,23 +1,13 @@
 import * as React from "react";
 import { Link } from "react-router";
-import { BackArrow } from "../back_arrow";
-import { CropLiveSearchResult } from "../interfaces";
+import { BackArrow } from "../../ui";
+import { SearchBoxParams } from "../interfaces";
 import { Everything } from "../../interfaces";
 import { openFarmSearchQuery } from "../actions";
 import { connect } from "react-redux";
 import { t } from "i18next";
 
-interface SpeciesCatalogTileProps {
-  result: CropLiveSearchResult;
-  dispatch: Function;
-}
-
-interface SearchBoxParams {
-  query: string;
-  dispatch: Function;
-}
-
-function SearchBox({query, dispatch}: SearchBoxParams) {
+function SearchBox({ query, dispatch }: SearchBoxParams) {
   return <input value={query}
     onChange={(e) => doSearch(e, dispatch)}
     className="search"
@@ -37,15 +27,17 @@ export class SpeciesCatalog extends React.Component<Everything, {}> {
     let species = cropSearchResults.map(resp => {
       let { crop, image } = resp;
       return <Link key={resp.crop.slug}
+        draggable={false}
         to={`/app/designer/plants/crop_search/` + crop.slug.toString()}>
         <div className="plant-catalog-tile col-xs-6">
           <label>{crop.name}</label>
-          <img className="crop-drag-info-image" src={image} />
+          <img className="plant-catalog-image" src={image}
+            draggable={false} />
         </div>
       </Link>;
     });
 
-    return <div className="panel-container green-panel">
+    return <div className="panel-container green-panel species-catalog-panel">
       <div className="panel-header green-panel">
         <p className="panel-title">
           <BackArrow /> {t("Choose a species")}

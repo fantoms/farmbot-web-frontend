@@ -5,37 +5,46 @@ var fs = require("fs");
 var path = require("path");
 var configPath = path.resolve(__dirname, "../src/config.json");
 var FarmBotRenderer = require("./farmBotRenderer");
+var WebpackNotifierPlugin = require('webpack-notifier');
+
 global.WEBPACK_ENV = "development";
 
-c = function() {
-    var conf = generateConfig();
+c = function () {
+  var conf = generateConfig();
 
-    conf.output.filename = "dist/[name].js"
+  conf.output.filename = "dist/[name].js"
 
-    conf
-        .module
-        .rules
-        .push({
-            test: [/\.scss$/, /\.css$/],
-            use: ["style-loader", "css-loader", "sass-loader"]
-        });
+  conf
+    .module
+    .rules
+    .push({
+      test: [/\.scss$/, /\.css$/],
+      use: ["style-loader", "css-loader", "sass-loader"]
+    });
 
-    conf
-        .plugins
-        .push(new webpack.DefinePlugin({
-            "process.env.NODE_ENV": JSON.stringify("development"),
-            "process.env.REVISION": JSON.stringify(
-                exec('git log --pretty=format:"%h%n%ad%n%f" -1').toString())
-        }));
+  conf
+    .plugins
+    .push(new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify("development"),
+      "process.env.REVISION": JSON.stringify(
+        exec('git log --pretty=format:"%h%n%ad%n%f" -1').toString())
+    }));
 
-    if (fs.existsSync(configPath)) {
-        var config = require(configPath);
-        conf.plugins.push(new webpack.DefinePlugin({
-            "process.env.CONFIG": JSON.stringify(config)
-        }));
-    }
+  conf
+    .plugins
+    .push(new WebpackNotifierPlugin({
+      title: 'Webpack',
+      excludeWarnings: false
+    }))
 
-    return conf;
+  if (fs.existsSync(configPath)) {
+    var config = require(configPath);
+    conf.plugins.push(new webpack.DefinePlugin({
+      "process.env.CONFIG": JSON.stringify(config)
+    }));
+  }
+
+  return conf;
 };
 
 module.exports = c();

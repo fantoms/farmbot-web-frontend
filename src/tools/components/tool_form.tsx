@@ -1,123 +1,97 @@
 import * as React from "react";
-import { ListAndFormProps, ToolFormState } from "../interfaces";
+import { ToolFormState, Props, Tool } from "../interfaces";
+import { t } from "i18next";
+import { Row, Col, Widget, WidgetBody, WidgetHeader, BlurableInput } from "../../ui";
 import {
-  destroyTool,
+  toggleEditingTools,
   addTool,
-  stopEditingTools,
+  destroyTool,
   updateTool,
   saveTools
 } from "../actions";
-import { t } from "i18next";
-import {
-  Col,
-  Widget,
-  WidgetBody,
-  WidgetHeader,
-  BlurableInput
-} from "../../ui";
 
-export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
-  constructor() {
-    super();
-    this.add = this.add.bind(this);
-    this.set = this.set.bind(this);
-    this.save = this.save.bind(this);
-    this.updateToolName = this.updateToolName.bind(this);
-    this.state = { name: "" };
+export class ToolForm extends React.Component<Props, ToolFormState> {
+  setNewToolName = (e: React.FormEvent<HTMLInputElement>) => {
+    this.setState({ newToolName: e.currentTarget.value });
   }
 
-  add() {
-    this.props.dispatch(addTool(this.state.name));
-    this.setState({ name: "" });
-  }
-
-  updateToolName(e: React.FormEvent<HTMLInputElement>) {
+  update = (e: React.FormEvent<HTMLInputElement>) => {
     let { id, value } = e.currentTarget;
     this.props.dispatch(updateTool(parseInt(id), value));
   }
 
-  save() {
-    this.props.dispatch(saveTools(this.props.all.tools.all));
+  destroy = (tool_id: number | undefined) => {
+    if (tool_id) {
+      this.props.dispatch(destroyTool(tool_id));
+    } else {
+      throw new Error("Tool ID could not be found.");
+    }
   }
 
-  set(e: React.FormEvent<HTMLInputElement>) {
-    this.setState({ name: e.currentTarget.value });
+  add = (e: React.FormEvent<HTMLButtonElement>) => {
+    this.props.dispatch(addTool(this.state.newToolName || ""));
+    this.setState({ newToolName: "" });
   }
 
   render() {
-    let { set, add, updateToolName, save } = this;
-    let { dispatch } = this.props;
-    let { tools } = this.props.all;
-    let stopEdit = () => { dispatch(stopEditingTools()); };
+    let toggle = () => this.props.dispatch(toggleEditingTools());
     return <Widget>
       <WidgetHeader
         helpText={t(`This is a list of all your FarmBot Tools.
-                      Click the Edit button to add, edit, or delete tools.`)}
-        title="TOOLS">
-        <button
-          className="green button-like"
-          onClick={() => { save(); }}>
-          {t("SAVE")}
-          {tools.dirty && ("*")}
-        </button>
+          Click the Edit button to add, edit, or delete tools.`)}
+        title="Tools">
         <button
           className="gray button-like"
-          onClick={stopEdit}>
-          {t("BACK")}
+          onClick={toggle}>
+          {t("Back")}
+        </button>
+        <button
+          className="green button-like"
+          onClick={() => this.props.dispatch(saveTools(this.props.tools))}>
+          {t("Save")}
+          {this.props.dirtyTools && ("*")}
         </button>
       </WidgetHeader>
       <WidgetBody>
-        <table>
-          <thead>
-            <tr>
-              <th>{t("TOOL NAME")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tools.all.map((tool, index) => {
-              index++;
-              let { name, id } = tool;
-              return <tr key={index}>
-                <td>
-                  <BlurableInput
-                    value={name || "Error getting Name"}
-                    onCommit={updateToolName}
-                    id={(id || (index - 1000)).toString()}
-                    name={index.toString()}
-                  />
-                </td>
-                <td>
-                  <button
-                    className={`button-like red`}
-                    onClick={() => {
-                      if (id) {
-                        dispatch(destroyTool(id));
-                      }
-                    }}>
-                    <i className="fa fa-times"></i>
-                  </button>
-                </td>
-              </tr>;
-            })}
-            <tr>
-              <td>
-                <input
-                  value={this.state.name}
-                  onChange={set}
-                  name="name"
-                />
-              </td>
-              <td>
-                <button
-                  className={`button-like 
-                                                green`}
-                  onClick={() => { dispatch(add); }}>
-                  <i className="fa fa-plus"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <Row>
+          <Col xs={12}>
+            <label>{t("Tool Name")}</label>
+          </Col>
+        </Row>
+        {this.props.getSortedTools().map((tool: Tool) => {
+          return <Row key={tool.id}>
+            <Col xs={10}>
+              <BlurableInput
+                id={(tool.id || "Error getting ID").toString()}
+                value={tool.name || "Error getting Name"}
+                onCommit={this.update}
+              />
+            </Col>
+            <Col xs={2}>
+              <button
+                className="button-like red"
+                onClick={() => this.destroy(tool.id)}>
+                <i className="fa fa-times"></i>
+              </button>
+            </Col>
+          </Row>;
+        })}
+        <Row>
+          <Col xs={10}>
+            <BlurableInput
+              value={this.state.newToolName || ""}
+              onCommit={this.setNewToolName}
+              type="text"
+            />
+          </Col>
+          <Col xs={2}>
+            <button
+              className="button-like green"
+              onClick={this.add}>
+              <i className="fa fa-plus"></i>
+            </button>
+          </Col>
+        </Row>
       </WidgetBody>
     </Widget>;
   }

@@ -1,11 +1,6 @@
 import * as Axios from "axios";
 import { error, success } from "../ui";
-import {
-  Plant,
-  MovePlantProps,
-  FarmEvent,
-  SelectSequenceOrRegimenProps
-} from "./interfaces";
+import { Plant, MovePlantProps, FarmEvent, FarmEventForm } from "./interfaces";
 import { Thunk } from "../redux/interfaces";
 import { CropSearchResult, OpenFarm } from "./openfarm";
 import { t } from "i18next";
@@ -13,89 +8,37 @@ import * as _ from "lodash";
 import { API } from "../api";
 import { Everything } from "../interfaces";
 import { findPlantById } from "../sync/reducer";
+import { prettyPrintApiErrors } from "../util";
+import { DEFAULT_ICON } from "../open_farm/index";
 
-/** Actions for creating a new event */
-export function selectSequenceOrRegimen(payload: SelectSequenceOrRegimenProps) {
-  return { type: "SELECT_SEQUENCE_OR_REGIMEN", payload };
-};
-
-export function addFarmEventStart(property: string, value: string) {
-  return { type: "ADD_FARM_EVENT_START", payload: { property, value } };
-};
-
-export function addFarmEventRepeat(value: number) {
-  return { type: "ADD_FARM_EVENT_REPEAT", payload: { value } };
-};
-
-export function addFarmEventTimeUnit(value: string | number | undefined) {
-  return { type: "ADD_FARM_EVENT_TIME_UNIT", payload: { value } };
-};
-
-export function addFarmEventEnd(property: string, value: string) {
-  return { type: "ADD_FARM_EVENT_END", payload: { property, value } };
-};
-
-/** Actions for updating an existing event */
-export function updateSequenceOrRegimen(payload: SelectSequenceOrRegimenProps) {
-  return { type: "UPDATE_SEQUENCE_OR_REGIMEN", payload };
-};
-
-export function updateFarmEventStart(
-  property: string, value: string, farm_event_id: number
-) {
-  return {
-    type: "UPDATE_FARM_EVENT_START", payload:
-    { property, value, farm_event_id }
-  };
-};
-
-export function updateFarmEventRepeat(value: number, farm_event_id: number) {
-  return { type: "UPDATE_FARM_EVENT_REPEAT", payload: { value, farm_event_id } };
-};
-
-export function updateFarmEventTimeUnit(
-  value: string | number | undefined, farm_event_id: number
-) {
-  return {
-    type: "UPDATE_FARM_EVENT_TIME_UNIT", payload:
-    { value, farm_event_id }
-  };
-};
-
-export function updateFarmEventEnd(
-  property: string, value: string, farm_event_id: number
-) {
-  return {
-    type: "UPDATE_FARM_EVENT_END", payload:
-    { property, value, farm_event_id }
-  };
-};
-
-export function saveFarmEvent(farm_event: Partial<FarmEvent>,
+export function saveFarmEvent(farm_event: FarmEventForm,
   callback: () => void): Thunk {
   let url = API.current.farmEventsPath;
   return function (dispatch, getState) {
     return Axios.post<FarmEvent>(url, farm_event)
       .then(resp => {
+        if (resp instanceof Error) {
+          error(prettyPrintApiErrors(resp));
+          throw resp;
+        }
         let payload = { ...farm_event, ...resp.data };
         dispatch({ type: "SAVE_FARM_EVENT_OK", payload });
         success(t("Successfully saved event."));
         callback();
-      })
-      .catch(payload => {
-        error(t("Tried to save Farm Event, but couldn't."));
       });
   };
 };
 
-export function updateFarmEvent(farm_event: Partial<FarmEvent>): Thunk {
+export function updateFarmEvent(farm_event: FarmEventForm,
+  callback: () => void): Thunk {
   let url = API.current.farmEventsPath + farm_event.id;
   return function (dispatch, getState) {
-    return Axios.patch<Partial<FarmEvent>>(url, farm_event)
+    return Axios.patch<FarmEvent>(url, farm_event)
       .then(resp => {
         let payload = { ...farm_event, ...resp.data };
         dispatch({ type: "UPDATE_FARM_EVENT_OK", payload });
         success(t("Successfully saved event."));
+        callback();
       })
       .catch(payload => {
         error(t("Tried to update Farm Event, but couldn't."));
@@ -103,14 +46,16 @@ export function updateFarmEvent(farm_event: Partial<FarmEvent>): Thunk {
   };
 };
 
-export function destroyFarmEvent(farm_event_id: number): Thunk {
+export function destroyFarmEvent(farm_event_id: number,
+  callback: () => void): Thunk {
   let url = API.current.farmEventsPath + farm_event_id;
   return function (dispatch, getState) {
     return Axios.delete<Partial<FarmEvent>>(url, farm_event_id)
       .then(resp => {
         let payload = { id: farm_event_id, ...resp.data };
         dispatch({ type: "DELETE_FARM_EVENT_OK", payload });
-        error("Deleted farm event.", "Deleted");
+        success("Deleted farm event.", "Deleted");
+        callback();
       })
       .catch(payload => {
         error(t("Tried to delete Farm Event, but couldn't."));
@@ -172,7 +117,7 @@ export function destroyPlant(plant_id: number): Thunk {
   };
 };
 
-let STUB_IMAGE = "http://placehold.it/200x150";
+let STUB_IMAGE = DEFAULT_ICON;
 let url = (q: string) => `${OpenFarm.cropUrl}?include=pictures&filter=${q}`;
 // If we do a search on keypress, we will DDoS OpenFarm.
 // This function prevents that from happening by pausing X ms
@@ -211,7 +156,6 @@ export function openFarmSearchQuery(query: string) { // TODO make less smelly
           type: "OF_SEARCH_RESULTS_OK",
           payload
         });
-      })
-      .catch(error => { console.warn(error); });
+      });
   };
 };

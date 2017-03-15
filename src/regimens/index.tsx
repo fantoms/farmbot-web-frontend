@@ -4,31 +4,33 @@ import { RegimensList } from "./list/index";
 import { RegimenEditorWidget } from "./editor/index";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
+import { isMobile } from "../util";
+import { MobileRegimensNav } from "./mobile_nav";
+import { RegimenPropsWithParams } from "./interfaces";
+import { Page, Row, Col } from "../ui/index";
 
-// TODO: Why is @connect broke? SEE: compile errors.
-class XRegimens extends React.Component<Everything, {}> {
-    render() {
-        let { bulkScheduler } = this.props;
-        return (
-            <div>
-                <div className="all-content-wrapper">
-                    <div className="row">
-                        <div className={`col-md-3 col-sm-12 col-md-offset-1`}>
-                            <BulkSchedulerWidget editor={bulkScheduler}
-                                sequences={this.props.sequences.all}
-                                dispatch={this.props.dispatch} />
-                        </div>
-                        <div className="col-md-4 col-sm-12">
-                            <RegimenEditorWidget { ...this.props } />
-                        </div>
-                        <div className="col-md-3 col-sm-12">
-                            <RegimensList { ...this.props } />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+@connect((state: Everything) => state)
+export class Regimens extends React.Component<RegimenPropsWithParams, {}> {
+  render() {
+    let { bulkScheduler } = this.props;
+
+    return <Page className="regimens">
+      <Row>
+        <Col xs={12} md={4}>
+          <BulkSchedulerWidget editor={bulkScheduler}
+            sequences={this.props.sequences.all}
+            dispatch={this.props.dispatch} />
+        </Col>
+        <Col xs={12} md={4}>
+          <RegimenEditorWidget { ...this.props } />
+        </Col>
+        {isMobile() && (
+          <MobileRegimensNav { ...this.props} />
+        )}
+        <Col xs={12} md={4}>
+          <RegimensList { ...this.props } />
+        </Col>
+      </Row>
+    </Page>;
+  }
 }
-
-export let Regimens = connect((state: Everything) => state)(XRegimens);

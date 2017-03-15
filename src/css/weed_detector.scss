@@ -19,11 +19,12 @@
         padding: 0 1rem;
     }
     .weed-detector-meta {
-        position: absolute;
-        left: 15px;
-        right: 15px;
-        background: $dark-gray;
+        background: $dark_gray;
+        margin-left: -14px;
+        margin-right: -14px;
         padding: 0.3rem 2rem 0;
+        margin-bottom: -2rem;
+        margin-top: 20px;
         label {
             font-weight: normal;
             margin-right: 1rem;
@@ -33,11 +34,53 @@
             font-weight: bold;
             color: $white;
         }
-        .time {
-            float: left;
+        .created-at {
+            display: inline-block;
         }
-        .location {
+        .meta-coordinates {
             float: right;
+            display: flex;
+            .coordinate:not(:last-of-type) {
+                margin-right: 1.8rem;
+            }
+        }
+    }
+    .fa-cog {
+        float: right;
+        color: white;
+        font-size: 1.8rem;
+        margin-right: 1rem;
+        position: relative;
+    }
+    .additional-settings-menu {
+        font-family: $roboto;
+        position: absolute;
+        z-index: 1;
+        top: 3rem;
+        left: -2rem;
+        background: $light_gray;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        padding: 1.4rem;
+        border-radius: 0.4rem;
+        min-width: 33rem;
+        &:after {
+            content: "";
+            background: $light_gray;
+            position: absolute;
+            height: 16px;
+            width: 16px;
+            top: -0.6rem;
+            left: 2rem;
+            transform: rotate(-45deg);
+        }
+        label {
+            font-size: 1rem;
+        }
+        input[type="checkbox"] {
+            display: inline-block;
+            width: inherit;
+            margin-left: 1rem;
+            vertical-align: top;
         }
     }
 }

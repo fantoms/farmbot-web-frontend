@@ -4,6 +4,8 @@ import {
   McuParams
 } from "farmbot";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES } from "farmbot";
+import { AuthState } from "../auth/interfaces";
+
 /** How the device is stored in the API side.
  * This is what comes back from the API as JSON.
  */
@@ -82,7 +84,6 @@ export interface BotProp {
   bot: BotState;
 }
 
-
 /** Status registers for the bot's status */
 export type HardwareState = BotStateTree;
 
@@ -107,4 +108,32 @@ export interface MoveRelProps {
   y: number;
   z: number;
   speed?: number | undefined;
+}
+
+export type Axis = "x" | "y" | "z" | "all";
+
+export interface CalibrationButtonProps {
+  axis: Axis;
+}
+
+export interface FarmbotOsProps {
+  bot: BotState;
+  auth: AuthState;
+  dispatch: Function;
+}
+
+export interface FarmbotOsState {
+  cameraStatus: "" | "sending" | "done" | "error";
+}
+
+export interface ConfigInputBoxProps {
+  bot: BotState;
+  setting: string;
+  dispatch: Function;
+}
+
+export interface McuInputBoxProps {
+  bot: BotState;
+  setting: string;
+  dispatch: Function;
 }

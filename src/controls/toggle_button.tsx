@@ -1,16 +1,8 @@
 import * as React from "react";
 import * as i18next from "i18next";
+import { ToggleButtonProps } from "./interfaces";
 
-interface ToggleButtonProps {
-  /** Function that is executed when the toggle button is clicked */
-  toggleAction: () => void;
-  toggleval: number | string | undefined;
-}
-
-interface ToggleButtonState { }
-
-export class ToggleButton extends React.Component<ToggleButtonProps,
-ToggleButtonState> {
+export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
   caption() {
     let captions: { [s: string]: string | undefined } = {
       "0": i18next.t("no"),

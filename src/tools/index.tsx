@@ -1,43 +1,26 @@
 import * as React from "react";
-import { Everything } from "../interfaces";
-import { ToolsState } from "./interfaces";
+import { ToolsState, Props } from "./interfaces";
+import { Col, Row, Page } from "../ui";
 import { ToolBayList, ToolBayForm, ToolList, ToolForm } from "./components";
 import { connect } from "react-redux";
+import { mapStateToProps } from "./state_to_props";
 
-@connect((state: Everything) => state)
-export class Tools extends React.Component<Everything, ToolsState> {
-    render() {
-        let editing = this.props.tools.editorMode;
-        let isEditingTools = this.props.tools.tools.isEditing;
-        return <div className="all-content-wrapper row tools">
-            <div className="col-md-8">
-                {!editing && (
-                    <ToolBayList
-                        all={this.props.tools}
-                        dispatch={this.props.dispatch}
-                    />
-                )}
-                {editing && (
-                    <ToolBayForm
-                        all={this.props.tools}
-                        dispatch={this.props.dispatch}
-                    />
-                )}
-            </div>
-            <div className="col-md-4">
-                {!isEditingTools && (
-                    <ToolList
-                        all={this.props.tools}
-                        dispatch={this.props.dispatch}
-                    />
-                )}
-                {isEditingTools && (
-                    <ToolForm
-                        all={this.props.tools}
-                        dispatch={this.props.dispatch}
-                    />
-                )}
-            </div>
-        </div>;
-    }
+@connect(mapStateToProps)
+export class Tools extends React.Component<Props, ToolsState> {
+  render() {
+    let isEditingBays = this.props.editorMode;
+    let isEditingTools = this.props.isEditingTools;
+    return <Page className="tools">
+      <Row>
+        <Col sm={7}>
+          {!isEditingBays && <ToolBayList {...this.props} />}
+          {isEditingBays && <ToolBayForm {...this.props} />}
+        </Col>
+        <Col sm={5}>
+          {!isEditingTools && <ToolList {...this.props} />}
+          {isEditingTools && <ToolForm {...this.props} />}
+        </Col>
+      </Row>
+    </Page>;
+  }
 }

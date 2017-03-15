@@ -5,13 +5,7 @@ import { Everything } from "../interfaces";
 import { success } from "../ui";
 import { Link } from "react-router";
 import { t } from "i18next";
-
-interface IndexProps extends Everything {
-  params: {
-    species: string;
-    plant_id: string;
-  };
-}
+import { IndexProps } from "./interfaces";
 
 @connect((state: Everything) => state)
 export class FarmDesigner extends React.Component<IndexProps, {}> {

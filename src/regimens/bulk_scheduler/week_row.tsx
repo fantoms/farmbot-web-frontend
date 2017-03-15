@@ -1,18 +1,13 @@
 import * as React from "react";
-import { Week } from "./interfaces";
+import { WeekRowProps, DayProps } from "./interfaces";
 import { toggleDay } from "./actions";
-
-interface WeekRowProps {
-  week: Week;
-  index: number;
-  dispatch: Function;
-}
+import { t } from "i18next";
 
 let DAYS = [1, 2, 3, 4, 5, 6, 7];
 
-export function WeekRow({index, dispatch, week}: WeekRowProps) {
+export function WeekRow({ index, dispatch, week }: WeekRowProps) {
   return <div className="week-row">
-    <label className="week-label">Week {index + 1}</label>
+    <label className="week-label">{t("Week")} {index + 1}</label>
     {
       DAYS.map(function (day) {
         let id = `${index}-${day}`;
@@ -28,18 +23,10 @@ export function WeekRow({index, dispatch, week}: WeekRowProps) {
   </div>;
 }
 
-interface DayProps {
-  day: number;
-  week: number;
-  dispatch: Function;
-  id: string;
-  active: boolean;
-}
-
 let select = (dispatch: Function, day: number, week: number) => () =>
   dispatch(toggleDay({ day, week }));
 
-function Day({day, id, dispatch, week, active}: DayProps) {
+function Day({ day, id, dispatch, week, active }: DayProps) {
   return <div className="day-selector-wrapper">
     <input type="checkbox"
       id={id}
@@ -47,7 +34,7 @@ function Day({day, id, dispatch, week, active}: DayProps) {
       onClick={select(dispatch, day, week)}
       checked={active}
       readOnly={true}
-      />
+    />
     <label className="day-label left-most" htmlFor={id}>
       {(week * 7) + day}
     </label>

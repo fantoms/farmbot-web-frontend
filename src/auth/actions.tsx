@@ -1,7 +1,7 @@
 import {
-    connectDevice,
-    fetchFWUpdateInfo,
-    fetchOSUpdateInfo
+  connectDevice,
+  fetchFWUpdateInfo,
+  fetchOSUpdateInfo
 } from "../devices/actions";
 import { DeviceAccountSettings } from "../devices/interfaces";
 import { push } from "../history";
@@ -17,157 +17,141 @@ import { API } from "../api";
 import { prettyPrintApiErrors } from "../util";
 import { Session } from "../session";
 import { UnsafeError } from "../interfaces";
+import { responseFulfilled, responseRejected, requestFulfilled } from "../interceptors";
 
 export function didLogin(authState: AuthState, dispatch: Function) {
-    API.setBaseUrl(authState.token.unencoded.iss);
-    dispatch(fetchOSUpdateInfo(authState.token.unencoded.os_update_server));
-    dispatch(fetchFWUpdateInfo(authState.token.unencoded.fw_update_server));
-    dispatch(loginOk(authState));
-    dispatch(fetchSyncData());
-    // TODO: Make regimens work with sync object
-    dispatch(fetchRegimens());
-    dispatch(connectDevice(authState.token.encoded));
+  API.setBaseUrl(authState.token.unencoded.iss);
+  dispatch(fetchOSUpdateInfo(authState.token.unencoded.os_update_server));
+  dispatch(fetchFWUpdateInfo(authState.token.unencoded.fw_update_server));
+  dispatch(loginOk(authState));
+  dispatch(fetchSyncData());
+  // TODO: Make regimens work with sync object
+  dispatch(fetchRegimens());
+  dispatch(connectDevice(authState.token.encoded));
 };
 
 export function downloadDeviceData(): Thunk {
-    return function (dispatch, getState) {
-        Axios
-            .get<DeviceAccountSettings>(API.current.devicePath)
-            .then(res => dispatch({
-                type: "REPLACE_DEVICE_ACCOUNT_INFO",
-                payload: res.data
-            }))
-            .catch(payload => dispatch({
-                type: "DEVICE_ACCOUNT_ERR",
-                payload
-            }));
-    };
+  return function (dispatch, getState) {
+    Axios
+      .get<DeviceAccountSettings>(API.current.devicePath)
+      .then(res => dispatch({
+        type: "REPLACE_DEVICE_ACCOUNT_INFO",
+        payload: res.data
+      }))
+      .catch(payload => dispatch({
+        type: "DEVICE_ACCOUNT_ERR",
+        payload
+      }));
+  };
 };
 
 // We need to handle OK logins for numerous use cases (Ex: login & registration)
 export function onLogin(dispatch: Function) {
-    return (response: Axios.AxiosXHR<AuthState>) => {
-        let { data } = response;
-        Session.put(data);
-        didLogin(data, dispatch);
-        push("/app/controls");
-    };
+  return (response: Axios.AxiosXHR<AuthState>) => {
+    let { data } = response;
+    Session.put(data);
+    didLogin(data, dispatch);
+    push("/app/controls");
+  };
 };
 
 export function login(username: string,
-    password: string,
-    url: string): Thunk {
-    return dispatch => {
-        return requestToken(username, password, url).then(
-            onLogin(dispatch),
-            (err) => dispatch(loginErr())
-        );
-    };
+  password: string,
+  url: string): Thunk {
+  return dispatch => {
+    return requestToken(username, password, url).then(
+      onLogin(dispatch),
+      (err) => dispatch(loginErr())
+    );
+  };
 }
 
 function loginErr() {
-    error(t("Login failed."));
-    return { type: "LOGIN_ERR" };
+  error(t("Login failed."));
+  return { type: "LOGIN_ERR" };
 }
 
 /** Very important. Once called, all outbound HTTP requests will
  * have a JSON Web Token attached to their "Authorization" header,
  * thereby granting access to the API. */
 export function loginOk(auth: AuthState): ReduxAction<AuthState> {
-    Axios.interceptors.response.use(x => x, function (x) {
-        if (x.response.status === 451) {
-            alert(t("The terms of service have recently changed. You must " +
-                "accept the new terms of service to continue using the site."));
-            window.location.href = "/tos_update.html";
-        }
-        return x;
-    });
-    Axios.interceptors.request.use(function (config) {
-        let req = config.url;
-        let isAPIRequest = req.includes(API.current.baseUrl);
-        if (isAPIRequest) {
-            config.headers = config.headers || {};
-            let headers = (config.headers as
-                { Authorization: string | undefined });
-            headers.Authorization = auth.token.encoded || "CANT_FIND_TOKEN";
-        }
-        return config;
-    });
+  Axios.interceptors.response.use(responseFulfilled, responseRejected);
+  Axios.interceptors.request.use(requestFulfilled(auth));
 
-    return {
-        type: "LOGIN_OK",
-        payload: auth
-    };
+  return {
+    type: "LOGIN_OK",
+    payload: auth
+  };
 }
 
 /** Sign up for the FarmBot service over AJAX. */
 export function register(name: string,
-    email: string,
-    password: string,
-    confirmation: string,
-    url: string): Thunk {
-    return dispatch => {
-        let p = requestRegistration(name,
-            email,
-            password,
-            confirmation,
-            url);
-        return p.then(onLogin(dispatch),
-            onRegistrationErr(dispatch));
-    };
+  email: string,
+  password: string,
+  confirmation: string,
+  url: string): Thunk {
+  return dispatch => {
+    let p = requestRegistration(name,
+      email,
+      password,
+      confirmation,
+      url);
+    return p.then(onLogin(dispatch),
+      onRegistrationErr(dispatch));
+  };
 }
 
 /** Handle user registration errors. */
 export function onRegistrationErr(dispatch: Function) {
-    return (err: UnsafeError) => {
-        error(prettyPrintApiErrors(err));
-        dispatch({
-            type: "REGISTRATION_ERROR",
-            payload: err
-        });
-    };
+  return (err: UnsafeError) => {
+    error(prettyPrintApiErrors(err));
+    dispatch({
+      type: "REGISTRATION_ERROR",
+      payload: err
+    });
+  };
 }
 
 /** Build a JSON object in preparation for an HTTP POST
  *  to registration endpoint */
 function requestRegistration(name: string,
-    email: string,
-    password: string,
-    confirmation: string,
-    url: string) {
-    let form = {
-        user: {
-            email: email,
-            password: password,
-            password_confirmation: confirmation,
-            name: name
-        }
-    };
-    return Axios.post<AuthState>(API.current.usersPath, form);
+  email: string,
+  password: string,
+  confirmation: string,
+  url: string) {
+  let form = {
+    user: {
+      email: email,
+      password: password,
+      password_confirmation: confirmation,
+      name: name
+    }
+  };
+  return Axios.post<AuthState>(API.current.usersPath, form);
 }
 
 /** Fetch API token if already registered. */
 function requestToken(email: string,
-    password: string,
-    url: string) {
-    let payload = { user: { email: email, password: password } };
-    // Set the base URL once here.
-    // It will get set once more when we get the "iss" claim from the JWT.
-    API.setBaseUrl(url);
-    return Axios.post<AuthState>(API.current.tokensPath, payload);
+  password: string,
+  url: string) {
+  let payload = { user: { email: email, password: password } };
+  // Set the base URL once here.
+  // It will get set once more when we get the "iss" claim from the JWT.
+  API.setBaseUrl(url);
+  return Axios.post<AuthState>(API.current.tokensPath, payload);
 }
 
 export function logout() {
-    // When logging out, we pop up a toast message to confirm logout.
-    // Sometimes, LOGOUT is dispatched when the user is already logged out.
-    // In those cases, seeing a logout message may confuse the user.
-    // To circumvent this, we must check if the user had a token.
-    // If there was infact a token, we can safely show the message.
-    if (Session.get()) { success("You have been logged out."); }
-    Session.clear(true);
-    // Technically this is unreachable code:
-    return {
-        type: "LOGOUT",
-        payload: {}
-    };
+  // When logging out, we pop up a toast message to confirm logout.
+  // Sometimes, LOGOUT is dispatched when the user is already logged out.
+  // In those cases, seeing a logout message may confuse the user.
+  // To circumvent this, we must check if the user had a token.
+  // If there was infact a token, we can safely show the message.
+  if (Session.get()) { success("You have been logged out."); }
+  Session.clear(true);
+  // Technically this is unreachable code:
+  return {
+    type: "LOGOUT",
+    payload: {}
+  };
 }

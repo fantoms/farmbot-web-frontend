@@ -1,9 +1,9 @@
 import * as React from "react";
-import { RegimenProps } from "../interfaces";
 import { deleteRegimen } from "../actions";
 import { t } from "i18next";
+import { DeleteButtonProps } from "./interfaces";
 
-function remove({regimen, dispatch, baseUrl}: DeleteButtonProps) {
+function remove({ regimen, dispatch }: DeleteButtonProps) {
   if (regimen) {
     return (event: React.FormEvent<{}>) =>
       regimen && dispatch(deleteRegimen(regimen));
@@ -13,13 +13,9 @@ function remove({regimen, dispatch, baseUrl}: DeleteButtonProps) {
   }
 }
 
-interface DeleteButtonProps extends RegimenProps {
-  baseUrl: string;
-};
-
-export function DeleteButton({regimen, dispatch, baseUrl}: DeleteButtonProps) {
+export function DeleteButton({ regimen, dispatch, baseUrl }: DeleteButtonProps) {
   if (!regimen) { return <span />; };
-  return <button className="red button-like widget-control"
+  return <button className="red button-like"
     onClick={remove({ dispatch, regimen, baseUrl })}>
     {t("Delete")}
   </button>;

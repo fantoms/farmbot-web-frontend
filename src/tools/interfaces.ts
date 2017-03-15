@@ -1,21 +1,29 @@
-import { AxiosErrorResponse } from "../util";
+import { DropDownItem } from "../ui/fb_select";
 
-/** Main */
 export interface ToolsState {
   editorMode: boolean;
   tool_bays: ToolBay[];
   tool_slots: ToolSlot[];
   tools: {
-    isEditing?: boolean;
+    isEditing: boolean;
     all: Tool[];
-    dirty?: boolean;
+    dirty: boolean;
   };
 }
 
-/** Related */
-export interface ListAndFormProps {
+export interface Props {
+  toolBays: ToolBay[];
+  toolSlots: ToolSlot[];
+  tools: Tool[];
+  editorMode: boolean;
+  isEditingTools: boolean;
+  dirtyTools: boolean;
+  getSortedTools(): Tool[];
+  getToolSlots(toolBayId: number): ToolSlot[];
+  getToolOptions(): DropDownItem[];
+  getChosenToolOption(toolSlotId: number): DropDownItem;
+  getChosenTool(toolSlotId: number): Tool;
   dispatch: Function;
-  all: ToolsState;
 }
 
 export interface ToolBay {
@@ -26,26 +34,18 @@ export interface ToolBay {
   created_at?: string | undefined;
 }
 
-export interface ToolBayFormState {
-  x?: number;
-  y?: number;
-  z?: number;
-  tool_id?: null | number;
-}
-
 export interface ToolFormState {
-  name: string;
-  id?: number;
+  newToolName: string;
 }
 
 export interface ToolSlot {
-  id?: number;
+  id: number;
   tool_bay_id?: number;
-  tool_id?: null | number;
+  tool_id?: number | undefined;
   created_at?: string;
-  x?: number;
-  y?: number;
-  z?: number;
+  x: number;
+  y: number;
+  z: number;
   dirty?: boolean;
 }
 
@@ -56,14 +56,8 @@ export interface UpdateToolSlotPayl {
 }
 
 export interface Tool {
-  id: number | undefined;
+  id?: number | undefined;
   name: string;
   dirty?: boolean;
   status?: undefined | "unknown" | "active" | "inactive";
-}
-
-/** Actions */
-export interface ErrorPayl {
-  type: string;
-  payload: AxiosErrorResponse;
 }

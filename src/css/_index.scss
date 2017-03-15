@@ -1,5 +1,4 @@
 // Node Modules
-@import "../../node_modules/react-select/dist/react-select.css";
 @import "../../node_modules/@blueprintjs/core/dist/blueprint.css";
 // Partials
 @import "colors";
@@ -19,7 +18,9 @@
 @import "labels";
 @import "navbar";
 @import "regimen_editor_widget";
+@import "regimens";
 @import "sequences";
+@import "spinner";
 @import "status_ticker";
 @import "steps";
 @import "tables";

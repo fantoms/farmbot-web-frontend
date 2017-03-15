@@ -7,18 +7,18 @@ import "../css/_index.scss";
 import "../npm_addons";
 
 detectLanguage().then((config) => {
-    i18next.init(config, (err, t) => {
-        let node = document.createElement("DIV");
-        node.id = "root";
-        document.body.appendChild(node);
+  i18next.init(config, (err, t) => {
+    let node = document.createElement("DIV");
+    node.id = "root";
+    document.body.appendChild(node);
 
-        let reactElem = React.createElement(PasswordReset, {});
-        let domElem = document.getElementById("root");
+    let reactElem = React.createElement(PasswordReset, {});
+    let domElem = document.getElementById("root");
 
-        if (domElem) {
-            render(reactElem, domElem);
-        } else {
-            throw new Error(t("Add a div with id `root` to the page first."));
-        };
-    });
+    if (domElem) {
+      render(reactElem, domElem);
+    } else {
+      throw new Error(t("Add a div with id `root` to the page first."));
+    };
+  });
 });

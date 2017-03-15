@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { Everything } from "../interfaces";
 import { isMobile } from "../util";
 import { Link } from "react-router";
+import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui/index";
 
 let buttonList = (dispatch: Function) => (seq: Sequence, index: number) => {
   let css = ["block-wrapper",
@@ -37,37 +38,24 @@ let buttonList = (dispatch: Function) => (seq: Sequence, index: number) => {
 export class SequencesList extends React.Component<SequencesListProps, {}> {
   render() {
     let { sequences, dispatch } = this.props;
-    return <div>
-      <div className="widget-wrapper sequences-widget">
-        <div className="row">
-          <div className="col-sm-12">
-            <button className="green button-like widget-control"
-              onClick={() => dispatch(addSequence())}>
-              {t("Add")}
-            </button>
-            <div className="widget-header">
-              <h5>{t("Sequences")}</h5>
-              <i className="fa fa-question-circle widget-help-icon">
-                <div className="widget-help-text">
-                  {t(`Here is the list of all of your sequences.
-                  Click one to edit.`)}
-                </div>
-              </i>
-            </div>
-          </div>
-        </div>
-        <div className="widget-content no-bottom-padding">
-          <div className="row">
-            <div className="col-sm-12">
-              <div>
-                {sequences.all.map(buttonList(dispatch))}
-              </div>
-            </div>
-          </div>
-        </div>
-        <i className="fa fa-plus plus-button"
-          onClick={() => dispatch(addSequence())}></i>
-      </div>
-    </div>;
+    return <Widget className="sequence-list-widget">
+      <WidgetHeader title="Sequences"
+        helpText={`Here is the list of all of your sequences.
+                   Click one to edit.`}>
+        <button className="green button-like"
+          onClick={() => dispatch(addSequence())}>
+          {t("Add")}
+        </button>
+      </WidgetHeader>
+      <WidgetBody>
+        <Row>
+          <Col xs={12}>
+            {sequences.all.map(buttonList(dispatch))}
+          </Col>
+        </Row>
+      </WidgetBody>
+      <i className="fa fa-plus plus-button"
+        onClick={() => dispatch(addSequence())}></i>
+    </Widget>;
   }
 }

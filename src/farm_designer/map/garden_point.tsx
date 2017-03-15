@@ -1,5 +1,7 @@
 import * as React from "react";
-import { Point } from "../interfaces";
+import { GardenPointProps } from "../interfaces";
+import { defensiveClone } from "../../util";
+
 const POINT_STYLES = {
   stroke: "green",
   strokeOpacity: 0.3,
@@ -7,20 +9,18 @@ const POINT_STYLES = {
   fill: "none",
 };
 
-interface Props {
-  point: Point;
-}
-
-export function GardenPoint(props: Props) {
+export function GardenPoint(props: GardenPointProps) {
   let { point } = props;
+  let styles = defensiveClone(POINT_STYLES);
+  styles.stroke = point.meta.color || "green";
   return <g>
     <circle cx={point.x}
       cy={point.y}
-      r={point.radius / 20}
-      {...POINT_STYLES} />
+      r={point.radius}
+      {...styles} />
     <circle cx={point.x}
       cy={point.y}
       r={2}
-      {...POINT_STYLES} />
+      {...styles} />
   </g>;
 }
